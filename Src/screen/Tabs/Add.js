@@ -71,12 +71,15 @@ const Add = () => {
       .add({
         name: name,
         price: price,
-        discountPrice: discountPrice,
         description: description,
+        discountPrice: discountPrice,
+
         imageUrl: url + '',
       })
       .then(() => {
         console.log('User added!');
+
+
       });
   };
 
@@ -92,43 +95,44 @@ const Add = () => {
           <Text style={styles.headerText}>Add Item</Text>
 
         </View>
-        {imageData !== null ? (
-          <Image source={{ uri: imageData.assets[0].uri }}
-          style={styles.ImageStyle}
-          />
 
+        {imageData !== null ? (
+          <Image source={{ uri: imageData.assets[0].uri }} style={styles.imagestyles} />
         ) : null}
 
-        <TextInput 
-        placeholder="Enter Item Name"
-         placeholderTextColor="black"
+
+        <TextInput
+          placeholder="Enter Item Name"
+          placeholderTextColor="black"
           style={styles.inputstyle} value={name}
           onChangeText={text => setName(text)}
 
         />
-        <TextInput placeholder="Enter Item Price" 
-        placeholderTextColor="black"
+        <TextInput placeholder="Enter Item Price"
+          placeholderTextColor="black"
           style={styles.inputstyle} value={price}
           onChangeText={text => setPrice(text)}
         />
-        <TextInput 
-        placeholder="Enter Item Item Description"
-         placeholderTextColor="black"
+        <TextInput
+          placeholder="Enter Item  Description"
+          placeholderTextColor="black"
           style={styles.inputstyle} value={description}
           onChangeText={text => setDescription(text)}
         />
-        <TextInput placeholder="Enter Item Discount" 
-        placeholderTextColor="black"
+        <TextInput placeholder="Enter Item Discount"
+          placeholderTextColor="black"
           style={styles.inputstyle} value={discountPrice}
           onChangeText={text => setDiscountPrice(text)}
         />
         <TextInput placeholder="Enter Item Image URL"
-         placeholderTextColor="black"
+          placeholderTextColor="black"
           style={styles.inputstyle} value={imageUrl}
           onChangeText={text => setImageUrl(text)}
         />
-        <Text style={{ alignSelf: 'center',
-         marginTop: 40, color: 'black' }}>OR</Text>
+        <Text style={{
+          alignSelf: 'center',
+          marginTop: 20, color: 'black'
+        }}>OR</Text>
         <TouchableOpacity
           style={styles.pickbtn} onPress={() => {
             requestCameraPermission();
