@@ -43,7 +43,7 @@ const Add = () => {
   };
 
   //camera permission
-  //opengallary
+  //open gallerys
   const openGallery = async () => {
     const result = await launchImageLibrary({ mediaType: 'photo' });
     if (result.didCancel) {
