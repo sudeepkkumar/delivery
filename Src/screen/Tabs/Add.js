@@ -152,6 +152,7 @@ const Add = () => {
 
 
           <Text style={{ color: "white" }}>UPLOAD ITEM</Text>
+          
         </TouchableOpacity>
       </View >
     </ScrollView>
