@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   },
   bottomView: {
     width: '100%',
-    height: 60,
+    height: 30,
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',

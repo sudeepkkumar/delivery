@@ -5,30 +5,28 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 
 const Items = () => {
-  const { items, setItems } = useState([]);
+  const [items, setItems] = useState([]);
+  const isFocused = useIsFocused();
+  const navigation = useNavigation();
+
   useEffect(() => {
     getItems();
-  },);
-  //fire base conn: to make data show in linst which is stored 
+  }, [isFocused]);
+
   const getItems = () => {
     firestore()
       .collection('items')
       .get()
       .then(querySnapshot => {
-        console.log('Total users: ', querySnapshot.size);
-        let tempData = [];//array created and object to fetch data
+        let tempData = [];
         querySnapshot.forEach(documentSnapshot => {
-          console.log(
-            'User ID: ',
-            documentSnapshot.id,
-            documentSnapshot.data(),
-          );
           tempData.push({
             id: documentSnapshot.id,
             data: documentSnapshot.data(),
@@ -37,19 +35,31 @@ const Items = () => {
         setItems(tempData);
       });
   };
+
   const deleteItem = docId => {
     firestore()
       .collection('items')
       .doc(docId)
       .delete()
       .then(() => {
-        console.log('User deleted!');
-        getItems();
+        Alert.alert('Success', 'Item deleted successfully!', [
+          {
+            text: 'OK',
+            onPress: () => {
+              getItems();
+            },
+          },
+        ]);
+      })
+      .catch(error => {
+        console.error('Error deleting item:', error);
+        Alert.alert('Error', 'Failed to delete item. Please try again later.');
       });
   };
 
   return (
     <View style={styles.container}>
+      <Text style={styles.headerText}>Item List</Text>
       <FlatList
         data={items}
         renderItem={({ item, index }) => {
@@ -64,23 +74,23 @@ const Items = () => {
                 <Text style={styles.descText}>{item.data.description}</Text>
                 <View style={styles.priceView}>
                   <Text style={styles.priceText}>
-                    {'$' + item.data.discountPrice}
+                    {'₹' + item.data.discountPrice}
                   </Text>
                   <Text style={styles.discountText}>
-                    {'$' + item.data.price}
+                    {'₹' + item.data.price}
                   </Text>
                 </View>
               </View>
               <View style={{ margin: 10 }}>
                 <TouchableOpacity
                   onPress={() => {
-                    navigation.navigate('EditItem', {
+                    navigation.navigate('Edititem', {
                       data: item.data,
                       id: item.id,
                     });
                   }}>
                   <Image
-                    source={require('../Tabs/images/add.png')}
+                    source={require('../Tabs/images/edit.png')}
                     style={styles.icon}
                   />
                 </TouchableOpacity>
@@ -89,36 +99,34 @@ const Items = () => {
                     deleteItem(item.id);
                   }}>
                   <Image
-                    source={require('../Tabs/images/add.png')}
-                    style={[styles.icon, { marginTop: 20 }]}
+                    source={require('../Tabs/images/delete.png')}
+                    style={[styles.icon, { marginTop: 10 }]} // Adjust the margin as needed
                   />
                 </TouchableOpacity>
               </View>
             </View>
           );
         }}
+        keyExtractor={(item, index) => index.toString()}
       />
     </View>
   );
 };
 
-
-export default Items
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   itemView: {
     flexDirection: 'row',
-    width: '90%',
+    width: '100%', // Use 100% to ensure all items are fully visible
     alignSelf: 'center',
     backgroundColor: '#fff',
     elevation: 4,
-    marginTop: 10,
-    borderRadius: 10,
+    marginTop: 20,
+    borderRadius: 20,
     height: 100,
     marginBottom: 10,
-   
   },
   itemImage: {
     width: 90,
@@ -137,10 +145,12 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 18,
     fontWeight: '700',
+    color: 'black',
   },
   descText: {
     fontSize: 14,
     fontWeight: '600',
+    color: 'black',
   },
   priceText: {
     fontSize: 18,
@@ -152,9 +162,24 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textDecorationLine: 'line-through',
     marginLeft: 5,
+    color: 'black',
   },
   icon: {
     width: 24,
     height: 24,
   },
+  headerText: {
+    height: 30,
+    width: '100%',
+    backgroundColor: 'white',
+    paddingLeft: 138,
+    fontSize: 21,
+    fontWeight: '700',
+    color: 'black',
+  },
+  flatList: {
+    paddingBottom: 100, // Add some padding to the bottom to accommodate the icons
+  },
 });
+
+export default Items;

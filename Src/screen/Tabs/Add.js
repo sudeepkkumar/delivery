@@ -1,7 +1,7 @@
 import {
   View, Text, StyleSheet, TextInput, TouchableOpacity, PermissionsAndroid,
   Image,
-  ScrollView,
+  ScrollView, Alert,
 } from 'react-native';
 import React, { useState } from 'react';
 //import { color } from 'native-base/lib/typescript/theme/styled-system';
@@ -77,11 +77,36 @@ const Add = () => {
         imageUrl: url + '',
       })
       .then(() => {
-        console.log('User added!');
-
-
+        console.log('Item added successfully!');
+        // Show an alert to the user when the item is uploaded successfully
+        Alert.alert('Success', 'Item uploaded successfully!', [
+          {
+            text: 'OK',
+            onPress: () => {
+              // Add any additional action you want here
+              // For example, you can navigate to a different screen.
+            },
+          },
+        ]);
+      })
+      .catch(error => {
+        console.error('Error adding item:', error);
+        // Show an error message to the user if adding the item fails
+        Alert.alert('Error', 'Failed to upload item. Please try again later.');
       });
   };
+  
+  
+  
+
+  // alert msg
+
+ 
+
+
+
+
+  //
 
 
 
@@ -147,12 +172,12 @@ const Add = () => {
 
         <TouchableOpacity
           style={styles.uploadbtn} onPress={() => {
-            uplaodImage();
+            uplaodImage(); 
           }}>
 
 
           <Text style={{ color: "white" }}>UPLOAD ITEM</Text>
-          
+
         </TouchableOpacity>
       </View >
     </ScrollView>
