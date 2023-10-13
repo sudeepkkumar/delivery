@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 const Splash = ({ navigation }) => {
     useEffect(() => {
         setTimeout(() => {
-            navigation.navigate('Login')
+            navigation.navigate('Signin')
         }, 3000);
     }, []);
 
@@ -15,7 +15,7 @@ const Splash = ({ navigation }) => {
         if (email !== null) {
             navigation.navigate('Home');
         } else {
-            navigation.navigate('SelectLogin');
+            navigation.navigate('Signin');
         }
     };
 

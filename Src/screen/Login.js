@@ -17,7 +17,7 @@ const Login = ({ navigation }) => {
             email == users.docs[0]._data.email &&
             password == users.docs[0]._data.password
         ) {
-            //await AsyncStorage.setItem('EMAIL', email);
+            await AsyncStorage.setItem('EMAIL', email);
             navigation.navigate('Dashboard');
         } else {
             alert('wrong email/pass');
