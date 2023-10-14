@@ -10,6 +10,7 @@ const Home = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   return (
     <View style={styles.container}>
+         <View style={styles.content}>
       {selectedTab == 0 ? (
         <Main />
       ) : selectedTab == 1 ? (
@@ -92,7 +93,7 @@ const Home = () => {
             style={styles.bottomIcon}
           />
         </TouchableOpacity>
-      </View>
+      </View></View>
     </View>
   );
 };
@@ -103,6 +104,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
+    content: {
+      flex: 1,  // Take up all available space
+    },
     bottomTabView: {
         flexDirection: 'row',
         height: 50,
@@ -112,7 +116,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         elevation: 5,
         position: 'absolute',
-        bottom: 5,
+        bottom: 0,
+        
     },
     bottomTab: {
         width: '30%',
