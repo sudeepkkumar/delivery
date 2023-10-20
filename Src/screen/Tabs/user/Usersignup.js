@@ -15,32 +15,32 @@ const Usersignup = ({ navigation }) => {
     const saveUser = () => {
         setModalVisible(true);
 
-        const userID =uuid.v4();//used for docid
+        const userId = uuid.v4();//used for docid
 
 
         firestore()
-        .collection('users')
-        .doc(userId) // documentid
-        .set({
+            .collection('users')
+            .doc(userId) // documentid
+            .set({
 
-            name: name,
-            email: email,
-            password: password,
-            mobile: mobile,
-            userID:userId, //docid
-            cart:[], //empty array for cart
+                name: name,
+                email: email,
+                password: password,
+                mobile: mobile,
+                userId: userId, //docid
+                cart: [], //empty array for cart
 
 
 
-        }).then(res => {
-            setModalVisible(false);
-            navigation.goBack();
+            }).then(res => {
+                setModalVisible(false);
+                navigation.goBack();
 
-        }).catch(error => {
-            setModalVisible(false);
-            console.log(error);
+            }).catch(error => {
+                setModalVisible(false);
+                console.log(error);
 
-        });
+            });
     };
 
     return (
