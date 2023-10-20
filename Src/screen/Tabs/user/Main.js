@@ -101,10 +101,10 @@ const Main = () => {
                 <Text style={styles.descText}>{item.data.description}</Text>
                 <View style={styles.priceView}>
                   <Text style={styles.priceText}>
-                    {'$' + item.data.discountPrice}
+                    {'₹' + item.data.discountPrice}
                   </Text>
                   <Text style={styles.discountText}>
-                    {'$' + item.data.price}
+                    {'₹' + item.data.price}
                   </Text>
                 </View>
               </View>

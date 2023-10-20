@@ -3,6 +3,7 @@ import React from 'react'
 import { useState } from 'react';
 import Loader from '../../../Common/Loader';
 import firestore from '@react-native-firebase/firestore';
+import uuid from 'react-native-uuid';//libary for doc id generation or create a unique id
 
 const Usersignup = ({ navigation }) => {
 
@@ -14,13 +15,21 @@ const Usersignup = ({ navigation }) => {
     const saveUser = () => {
         setModalVisible(true);
 
+        const userID =uuid.v4();//used for docid
 
-        firestore().collection('users').add({
+
+        firestore()
+        .collection('users')
+        .doc(userId) // documentid
+        .set({
 
             name: name,
             email: email,
             password: password,
             mobile: mobile,
+            userID:userId, //docid
+            cart:[], //empty array for cart
+
 
 
         }).then(res => {
