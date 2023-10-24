@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 const Splash = ({ navigation }) => {
     useEffect(() => {
         setTimeout(() => {
-            navigation.navigate('Signin')
+            navigation.navigate('Home')//next page to load 
         }, 3000);
     }, []);
 
