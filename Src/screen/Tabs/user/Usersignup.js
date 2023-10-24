@@ -5,7 +5,7 @@ import Loader from '../../../Common/Loader';
 import firestore from '@react-native-firebase/firestore';
 import uuid from 'react-native-uuid';//libary for doc id generation or create a unique id
 
-const Usersignup = ({ navigation }) => {
+const Usersignup = ({navigation}) => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -28,11 +28,12 @@ const Usersignup = ({ navigation }) => {
                 password: password,
                 mobile: mobile,
                 userId: userId, //docid
-                cart: [], //empty array for cart
+                cart: [],//empty array for cart
 
 
 
-            }).then(res => {
+            })
+            .then(res => {
                 setModalVisible(false);
                 navigation.goBack();
 

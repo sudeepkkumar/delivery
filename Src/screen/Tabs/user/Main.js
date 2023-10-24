@@ -6,11 +6,13 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+
+import React, { useEffect, useState } from 'react';
 import Header from '../../../Common/Header';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+//import Cart from '../user/Cart';
 let userId = '';
 const Main = () => {
   const [items, setItems] = useState([]);
@@ -18,7 +20,7 @@ const Main = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   useEffect(() => {
-    // const subscriber =
+    
     firestore()
       .collection('items')
       .get()
@@ -47,34 +49,35 @@ const Main = () => {
   const getCartItems = async () => {
     userId = await AsyncStorage.getItem('USERID');
     const user = await firestore().collection('users').doc(userId).get();
-    setCartCount(user._data.cart.length);
+    setCartCount(user._data.cart.length);//issue
   };
   const onAddToCart = async (item, index) => {
     const user = await firestore().collection('users').doc(userId).get();
     console.log(user._data.cart);
-    let tempDart = [];
-    tempDart = user._data.cart;
-    if (tempDart.length > 0) {
-      let existing = false;
-      tempDart.map(itm => {
-        if (itm.id == item.id) {
-          existing = true;
-          itm.data.qty = itm.data.qty + 1;
-        }
-      });
-      if (existing == false) {
-        tempDart.push(item);
-      }
-      firestore().collection('users').doc(userId).update({
-        cart: tempDart,
-      });
+    let tempCart = user._data.cart;
+  
+    // Find the item in the cart by its ID
+    const existingItem = tempCart.find((itm) => itm.id === item.id);
+  
+    if (existingItem) {
+      // If the item is already in the cart, increment its qty property
+      existingItem.data.qty = (existingItem.data.qty || 0) + 1;
     } else {
-      tempDart.push(item);
+      // If the item is not in the cart, add it with qty 1
+      tempCart.push({
+        id: item.id,
+        data: {
+          ...item.data,
+          qty: 1,
+        },
+      });
     }
-    console.log(tempDart);
-    firestore().collection('users').doc(userId).update({
-      cart: tempDart,
+  
+    // Update the user's cart in Firestore
+    await firestore().collection('users').doc(userId).update({
+      cart: tempCart,
     });
+  
     getCartItems();
   };
   return (
@@ -89,11 +92,11 @@ const Main = () => {
       />
       <FlatList
         data={items}
-        renderItem={({item, index}) => {
+        renderItem={({item,index}) => {
           return (
             <View style={styles.itemView}>
               <Image
-                source={{uri: item.data.imageUrl}}
+                source={{ uri: item.data.imageUrl }}
                 style={styles.itemImage}
               />
               <View style={styles.nameView}>
@@ -113,7 +116,7 @@ const Main = () => {
                 onPress={() => {
                   onAddToCart(item, index);
                 }}>
-                <Text style={{color: '#fff'}}>Add To cart</Text>
+                <Text style={{ color: '#fff' }}>Add To cart</Text>
               </TouchableOpacity>
             </View>
           );
@@ -125,9 +128,9 @@ const Main = () => {
 
 export default Main;
 const styles = StyleSheet.create({
-  container: {flex: 1},
+  container: { flex: 1 },
   padding: 16,
-  
+
   itemView: {
     flexDirection: 'row',
     width: '100%',
@@ -154,7 +157,7 @@ const styles = StyleSheet.create({
   priceView: {
     flexDirection: 'row',
     alignItems: 'center',
-    
+
   },
   nameText: {
     fontSize: 18,
@@ -169,7 +172,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'green',
     fontWeight: '700',
-    
+
   },
   discountText: {
     fontSize: 17,

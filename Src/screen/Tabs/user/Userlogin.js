@@ -15,40 +15,50 @@ const Userlogin = ({ navigation }) => {
     const adminLogin = async () => {
         setModalVisible(true);
         firestore()
-        .collection('users')
-        .where('email','>=',email)
-        .get()
-        .then(querySnapshot =>{
-            setModalVisible(false);
+            .collection('users')
+            .where('email', '>=', email)
+            .get()
+            .then(querySnapshot => {
+                setModalVisible(false);
 
-            console.log(querySnapshot.docs);
+                console.log(querySnapshot.docs);
 
-            if (querySnapshot.docs[0]._data !== null) {
-                if (
-                  querySnapshot.docs[0]._data.email === email &&
-                  querySnapshot.docs[0]._data.password === password
-                ) {
-                  goToNextScreen(
-                    //querySnapshot.docs[0]._data.userId,
-                    //querySnapshot.docs[0]._data.mobile,
-                    //querySnapshot.docs[0]._data.name,
-                  );
+                if (querySnapshot.docs[0]._data !== null) {
+                    if (
+                        querySnapshot.docs[0]._data.email === email &&
+                        querySnapshot.docs[0]._data.password === password
+                    )
+                    //AsyncStorage.setItem(
+                    //  'USERID',
+                    //  querySnapshot.docs[0]._data.userId,
+                    // ).then(() => {
+                    {
+                        goToNextScreen(
+                            querySnapshot.docs[0]._data.userId,
+                            querySnapshot.docs[0]._data.mobile,
+                            querySnapshot.docs[0]._data.name,
+                        );
+                    }
                 }
-              }
             })
             .catch(error => {
-              setModalVisible(false);
-              console.log(error);
-              alert('Please Check Email/Password');
+                setModalVisible(false);
+                console.log(error);
+                alert('Please Check Email/Password');
             });
-        };
-        const goToNextScreen = async (userId, mobile, name) => {
+    };
+    const goToNextScreen = async (userId, mobile, name) => {
+        await AsyncStorage.setItem('EMAIL', email);
+        await AsyncStorage.setItem('USERID', userId);
+        await AsyncStorage.setItem('MOBILE', mobile);
+        await AsyncStorage.setItem('NAME', name);
+        navigation.navigate('Home');
 
-            navigation.navigate('Home');
-        };
+        
+    };
 
 
-       
+
 
 
 
@@ -81,10 +91,10 @@ const Userlogin = ({ navigation }) => {
                 <Text style={styles.btnText}>Login</Text>
             </TouchableOpacity>
             <Text style={styles.Register}
-            onPress={()=>{
-                navigation.navigate('Usersignup')
+                onPress={() => {
+                    navigation.navigate('Usersignup')
 
-            }}
+                }}
             >Create New Acccount</Text>
             <Loader modalVisible={modalVisible} setModalVisible={setModalVisible} />
         </View>
@@ -132,11 +142,11 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: '#000',
     },
-    Register:{
+    Register: {
         fontSize: 18,
         fontWeight: '600',
-        textDecorationLine:'underline',
-        color:'#2F4F4F',
+        textDecorationLine: 'underline',
+        color: '#2F4F4F',
         alignSelf: 'center',
         marginTop: 40,
 

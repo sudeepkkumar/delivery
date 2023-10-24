@@ -30,7 +30,8 @@
     "react-native-reanimated": "^3.5.4",
     "react-native-safe-area-context": "^4.7.2",
     "react-native-screens": "^3.25.0",
-    "react-native-uuid": "^2.0.1"
+    "react-native-uuid": "^2.0.1",
+    "stripe": "^14.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
