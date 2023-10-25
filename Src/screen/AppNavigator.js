@@ -14,6 +14,7 @@ import Cart from './Tabs/user/Cart'
 import Checkout from '../Checkout/Checkout'
 import Address from '../Checkout/Address'
 import Addnewaddress from '../Checkout/Addnewaddress'
+import OrderStatus from '../Checkout/OrderStatus'
 
 
 const Stack = createStackNavigator();
@@ -85,6 +86,11 @@ const AppNavigator = () => {
                     component={Addnewaddress}
                     name="Addnewaddress"
                     options={{ headerShown: true }}
+                />
+                <Stack.Screen
+                    component={OrderStatus}
+                    name="OrderStatus"
+                    options={{ headerShown: false }}
                 />
 
 

@@ -8,6 +8,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
 import { useIsFocused } from '@react-navigation/native';
 import { FlatList } from 'react-native-gesture-handler';
+
+import RNUpiPayment from 'react-native-upi-payment';
+import OrderStatus from './OrderStatus';
+
+
+
 let userId = '';
 
 
@@ -33,21 +39,21 @@ const Checkout = ({ navigation }) => {
         tempDart = user._data.address;
         tempDart.map(item => {
             //if (item.addressId == addressId) {
-                //setSelectedAddress(
-                 //  item.street +
-                  //  ',' +
-                    //item.city +
-                   // ',' +
-                   // item.pincode +
-                  //  ',' +
-                  //  item.mobile,
-                //);
+            //setSelectedAddress(
+            //  item.street +
+            //  ',' +
+            //item.city +
+            // ',' +
+            // item.pincode +
+            //  ',' +
+            //  item.mobile,
+            //);
 
 
-                if (item.addressId === addressId) {
-                    const formattedAddress = `\n Address : ${item.street},\n City & State: ${item.city},\n Pincode: ${item.pincode}, \n Mobile: ${item.mobile}`;
-                    setSelectedAddress(formattedAddress);
-                  }
+            if (item.addressId === addressId) {
+                const formattedAddress = `\n Address : ${item.street},\n City & State: ${item.city},\n Pincode: ${item.pincode}, \n Mobile: ${item.mobile}`;
+                setSelectedAddress(formattedAddress);
+            }
 
         });
 
@@ -61,6 +67,61 @@ const Checkout = ({ navigation }) => {
         });
         return total;
     };
+
+
+    //adding payment UPI gate way 
+
+    const payNow = async () => {
+        try {
+          const email = await AsyncStorage.getItem('EMAIL');
+          const name = await AsyncStorage.getItem('NAME');
+          const mobile = await AsyncStorage.getItem('MOBILE');
+      
+          const options = {
+            vpa: '', // Replace with the recipient's UPI ID
+            payeeName: name, // Replace with the recipient's name
+            amount: getTotal(), // Replace with the payment amount
+            transactionRef: 'abc', // Replace with a unique transaction reference
+          };
+      
+          RNUpiPayment.initializePayment(options, successCallback, failureCallback);
+      
+          function successCallback(data) {
+            console.log('UPI payment successful:', data);
+            navigateToOrderStatus('success', data);
+          }
+      
+          function failureCallback(data) {
+            console.log('UPI payment failed:', data);
+            navigateToOrderStatus('failed');
+          }
+      
+          function navigateToOrderStatus(status, paymentId) {
+            navigation.navigate('OrderStatus', {
+              status: status,
+              paymentId: paymentId,
+              cartList: cartList, // Ensure cartList is defined
+              total: getTotal(), // Ensure getTotal is defined
+              address: selectedAddress, // Ensure selectedAddress is defined
+              userId: userId, // Ensure userId is defined
+              userName: name,
+              userEmail: email,
+              userMobile: mobile,
+            });
+          }
+        } catch (error) {
+          console.error('Error during payment:', error);
+        }
+      };
+      
+
+
+
+
+
+
+
+    // ed
 
     return (
         <View style={styles.container}>
@@ -108,14 +169,35 @@ const Checkout = ({ navigation }) => {
 
                 }}> Add New Address</Text>
             </View>
-            <Text style={{ margin: 15, width: '100%', color: 'black',
-             fontSize: 18, fontWeight: '500', }}>
-                {selectedAddress}</Text>
-                <TouchableOpacity style={styles.checkoutbtn}>
-                    <Text style={{color:'white',
-                    fontWeight: 'bold' }}>Pay Now   {'₹' + getTotal()}</Text>
+            <Text style={{
+                margin: 15, width: '100%', color: 'black',
+                fontSize: 18, fontWeight: '500',
+            }}>
+                {selectedAddress}
+            </Text>
 
-                </TouchableOpacity>
+
+            <TouchableOpacity
+                disabled={selectedAddress == 'No Selected Address' ? true : false}
+                style={[styles.checkoutBtn,
+                {
+                    backgroundColor:
+                        selectedAddress == 'No Selected Address' ? '#DADADA' : 'green',
+                },
+                ]}
+                onPress={() => {
+                    if (selectedAddress !== 'No Selected Address') {
+                        payNow();
+
+                    }
+                }}>
+                <Text style={{
+                    color: 'white',
+                    fontWeight: 'bold'
+                }}>
+                    Pay Now {'₹' + getTotal()}
+                </Text>
+            </TouchableOpacity>
 
         </View>
     )
@@ -199,7 +281,8 @@ const styles = StyleSheet.create({
         textDecorationLine: 'underline',
     },
 
-    checkoutbtn: {
+
+    checkoutBtn: {
         width: '90%',
         height: 50,
         borderRadius: 10,
@@ -209,7 +292,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         justifyContent: 'center',
         alignItems: 'center',
-      },
+    },
 
 
 });
