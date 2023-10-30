@@ -7,6 +7,7 @@ import {FlatList} from 'react-native-gesture-handler';
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
+  const [total, getTotal] = useState([]);
   useEffect(() => {
     getAllOrders();
   }, []);
@@ -62,7 +63,12 @@ const Orders = () => {
                             item.data.discountPrice +
                             ', Qty: ' +
                             item.data.qty}
+                            {' total: ' +
+                            item.data.getTotal
+                            }
+
                         </Text>
+
                       </View>
                     </View>
                   );

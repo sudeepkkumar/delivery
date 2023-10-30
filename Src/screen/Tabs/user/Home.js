@@ -9,6 +9,7 @@ import Profile from './Profile';
 const Home = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   return (
+    
     <View style={styles.container}>
          <View style={styles.content}>
       {selectedTab == 0 ? (
@@ -93,8 +94,9 @@ const Home = () => {
             style={styles.bottomIcon}
           />
         </TouchableOpacity>
+        </View>
       </View></View>
-    </View>
+    
   );
 };
 

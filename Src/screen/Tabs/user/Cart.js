@@ -1,23 +1,17 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
 import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
-import { StripeProvider } from '@stripe/stripe-react-native';
-let userId = '';
+
 const Cart = ({ navigation }) => {
   const isFocused = useIsFocused();
   const [cartList, setCartList] = useState([]);
+
   useEffect(() => {
     getCartItems();
   }, [isFocused]);
+
   const getCartItems = async () => {
     userId = await AsyncStorage.getItem('USERID');
     const user = await firestore().collection('users').doc(userId).get();
@@ -26,42 +20,36 @@ const Cart = ({ navigation }) => {
 
   const addItem = async item => {
     const user = await firestore().collection('users').doc(userId).get();
-    let tempDart = [];
-    tempDart = user._data.cart;
+    let tempDart = user._data.cart;
     tempDart.map(itm => {
-      if (itm.id == item.id) {
+      if (itm.id === item.id) {
         itm.data.qty = itm.data.qty + 1;
       }
     });
-    firestore().collection('users').doc(userId).update({
-      cart: tempDart,
-    });
+    await firestore().collection('users').doc(userId).update({ cart: tempDart });
     getCartItems();
   };
+
   const removeItem = async item => {
     const user = await firestore().collection('users').doc(userId).get();
-    let tempDart = [];
-    tempDart = user._data.cart;
+    let tempDart = user._data.cart;
     tempDart.map(itm => {
-      if (itm.id == item.id) {
+      if (itm.id === item.id) {
         itm.data.qty = itm.data.qty - 1;
       }
     });
-    firestore().collection('users').doc(userId).update({
-      cart: tempDart,
-    });
+    await firestore().collection('users').doc(userId).update({ cart: tempDart });
     getCartItems();
   };
+
   const deleteItem = async index => {
     const user = await firestore().collection('users').doc(userId).get();
-    let tempDart = [];
-    tempDart = user._data.cart;
+    let tempDart = user._data.cart;
     tempDart.splice(index, 1);
-    firestore().collection('users').doc(userId).update({
-      cart: tempDart,
-    });
+    await firestore().collection('users').doc(userId).update({ cart: tempDart });
     getCartItems();
   };
+
   const getTotal = () => {
     let total = 0;
     cartList.map(item => {
@@ -74,36 +62,22 @@ const Cart = ({ navigation }) => {
     <View style={styles.container}>
       <FlatList
         data={cartList}
-        renderItem={({item,index}) => {
+        renderItem={({ item, index }) => {
+          const isLastItem = index === cartList.length - 1;
           return (
-            <View style={styles.itemView}>
-              <Image
-               source={{uri: item.data.imageUrl}}
-                style={styles.itemImage}
-              />
+            <View style={[styles.itemView, isLastItem && styles.lastItemView]}>
+              <Image source={{ uri: item.data.imageUrl }} style={styles.itemImage} />
               <View style={styles.nameView}>
                 <Text style={styles.nameText}>{item.data.name}</Text>
                 <Text style={styles.descText}>{item.data.description}</Text>
                 <View style={styles.priceView}>
-                  <Text style={styles.priceText}>
-                    {'₹' + item.data.discountPrice}
-                  </Text>
-                  <Text style={styles.discountText}>
-                    {'₹' + item.data.price}
-                  </Text>
+                  <Text style={styles.priceText}>{'₹' + item.data.discountPrice}</Text>
+                  <Text style={styles.discountText}>{'₹' + item.data.price}</Text>
                 </View>
               </View>
               <View style={styles.addRemoveView}>
                 <TouchableOpacity
-                  style={[
-                    styles.addToCartBtn,
-                    {
-                      width: 30,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      marginRight: 15,
-                    },
-                  ]}
+                  style={[styles.addToCartBtn, { width: 30, justifyContent: 'center', alignItems: 'center', marginRight: 15 }]}
                   onPress={() => {
                     if (item.data.qty > 1) {
                       removeItem(item);
@@ -111,35 +85,15 @@ const Cart = ({ navigation }) => {
                       deleteItem(index);
                     }
                   }}>
-                  <Text
-                    style={{ color: '#fff', fontSize: 20, fontWeight: '700' }}>
-                    -
-                  </Text>
+                  <Text style={{ color: '#fff', fontSize: 20, fontWeight: '700' }}>-</Text>
                 </TouchableOpacity>
-                <Text style={{ fontSize: 16, fontWeight: '600', color: 'black' }}>
-                  {item.data.qty}
-                </Text>
+                <Text style={{ fontSize: 16, fontWeight: '600', color: 'black' }}>{item.data.qty}</Text>
                 <TouchableOpacity
-                  style={[
-                    styles.addToCartBtn,
-                    {
-                      width: 30,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      marginLeft: 15,
-                    },
-                  ]}
+                  style={[styles.addToCartBtn, { width: 30, justifyContent: 'center', alignItems: 'center', marginLeft: 15 }]}
                   onPress={() => {
                     addItem(item);
                   }}>
-                  <Text
-                    style={{
-                      color: '#fff',
-                      fontSize: 20,
-                      fontWeight: '700',
-                    }}>
-                    +
-                  </Text>
+                  <Text style={{ color: '#fff', fontSize: 20, fontWeight: '700' }}>+</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -147,20 +101,10 @@ const Cart = ({ navigation }) => {
         }}
       />
       {cartList.length > 0 && (
-        <View style={styles.checkoutView}>
-          <Text style={{ color: '#000', fontWeight: '600' }}>
-            {'items('+cartList.length+') Total  :₹' + getTotal()}
-          </Text>
+        <View style={styles.checkoutContainer}>
+          <Text style={styles.totalText}>{'Items (' + cartList.length + ') Total: ₹' + getTotal()}</Text>
           <TouchableOpacity
-            style={[
-              styles.addToCartBtn,
-              {
-                width: 100,
-                height: 40,
-                justifyContent: 'center',
-                alignItems: 'center',
-              },
-            ]}
+            style={styles.checkoutBtn}
             onPress={() => {
               navigation.navigate('Checkout');
             }}>
@@ -172,7 +116,6 @@ const Cart = ({ navigation }) => {
   );
 };
 
-export default Cart;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -188,7 +131,9 @@ const styles = StyleSheet.create({
     height: 100,
     marginBottom: 10,
     alignItems: 'center',
-
+  },
+  lastItemView: {
+    marginBottom: 80, // Adjust the margin as needed for spacing.
   },
   itemImage: {
     width: 90,
@@ -199,12 +144,10 @@ const styles = StyleSheet.create({
   nameView: {
     width: '30%',
     margin: 10,
-
   },
   priceView: {
     flexDirection: 'row',
     alignItems: 'center',
-
   },
   nameText: {
     fontSize: 18,
@@ -232,23 +175,36 @@ const styles = StyleSheet.create({
   addRemoveView: {
     flexDirection: 'row',
     alignItems: 'center',
-
   },
   addToCartBtn: {
     backgroundColor: 'green',
     padding: 10,
     borderRadius: 10,
   },
-  checkoutView: {
+  checkoutContainer: {
+    position: 'absolute',
+    bottom: 0,
     width: '100%',
     height: 60,
     backgroundColor: '#fff',
-    position: 'absolute',
-    bottom: 0,
     elevation: 5,
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-between',
     alignItems: 'center',
-
+    paddingHorizontal: 15,
+  },
+  totalText: {
+    color: '#000',
+    fontWeight: '600',
+  },
+  checkoutBtn: {
+    width: 100,
+    height: 40,
+    backgroundColor: 'green',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
   },
 });
+
+export default Cart;
