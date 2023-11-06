@@ -19,6 +19,7 @@ const Checkout = ({ navigation }) => {
     useEffect(() => {
         getCartItems();
         getAddressList();
+        
     }, [isFocused]);
 
     const getCartItems = async () => {
@@ -34,7 +35,7 @@ const Checkout = ({ navigation }) => {
         let tempDart = [];
         tempDart = user._data.address;
         tempDart.map(item => {
-            if (item.addressId === addressId) {
+            if (item.addressId == addressId) {
                 const formattedAddress = `\n Address : ${item.street},\n City & State: ${item.city},\n Pincode: ${item.pincode}, \n Mobile: ${item.mobile}`;
                 setSelectedAddress(formattedAddress);
             }
@@ -57,7 +58,7 @@ const Checkout = ({ navigation }) => {
             description: 'PANDA STUDIO S ',
             image: require('../screen/Tabs/images/add.png'),
             currency: 'INR',
-            key: 'rzp_test_yu6MPYDIHrkowz',
+            key: 'rzp_test_YdYwsHYsBLC4fC',
             amount: getTotal() * 100,
             name: 'PANDA STUDIO S',
             order_id: '', // Replace this with an order_id created using Orders API.
@@ -158,6 +159,7 @@ const Checkout = ({ navigation }) => {
     );
 }
 
+export default Checkout;
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
@@ -267,5 +269,3 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
-
-export default Checkout;

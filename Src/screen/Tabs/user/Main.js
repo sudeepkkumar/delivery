@@ -12,7 +12,6 @@ import Header from '../../../Common/Header';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-//import Cart from '../user/Cart';
 let userId = '';
 const Main = () => {
   const [items, setItems] = useState([]);
@@ -20,7 +19,7 @@ const Main = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   useEffect(() => {
-    
+    // const subscriber =
     firestore()
       .collection('items')
       .get()
@@ -49,41 +48,40 @@ const Main = () => {
   const getCartItems = async () => {
     userId = await AsyncStorage.getItem('USERID');
     const user = await firestore().collection('users').doc(userId).get();
-    setCartCount(user._data.cart.length);//issue
+    setCartCount(user._data.cart.length);
   };
   const onAddToCart = async (item, index) => {
     const user = await firestore().collection('users').doc(userId).get();
     console.log(user._data.cart);
-    let tempCart = user._data.cart;
-  
-    // Find the item in the cart by its ID
-    const existingItem = tempCart.find((itm) => itm.id === item.id);
-  
-    if (existingItem) {
-      // If the item is already in the cart, increment its qty property
-      existingItem.data.qty = (existingItem.data.qty || 0) + 1;
-    } else {
-      // If the item is not in the cart, add it with qty 1
-      tempCart.push({
-        id: item.id,
-        data: {
-          ...item.data,
-          qty: 1,
-        },
+    let tempDart = [];
+    tempDart = user._data.cart;
+    if (tempDart.length > 0) {
+      let existing = false;
+      tempDart.map(itm => {
+        if (itm.id == item.id) {
+          existing = true;
+          itm.data.qty = itm.data.qty + 1;
+        }
       });
+      if (existing == false) {
+        tempDart.push(item);
+      }
+      firestore().collection('users').doc(userId).update({
+        cart: tempDart,
+      });
+    } else {
+      tempDart.push(item);
     }
-  
-    // Update the user's cart in Firestore
-    await firestore().collection('users').doc(userId).update({
-      cart: tempCart,
+    console.log(tempDart);
+    firestore().collection('users').doc(userId).update({
+      cart: tempDart,
     });
-  
     getCartItems();
   };
   return (
     <View style={styles.container}>
       <Header
-        title={'name of your application'}
+        title={'FoodApp'}
         icon={require('../images/add.png')}
         count={cartCount}
         onClickIcon={() => {
@@ -92,11 +90,11 @@ const Main = () => {
       />
       <FlatList
         data={items}
-        renderItem={({item,index}) => {
+        renderItem={({item, index}) => {
           return (
             <View style={styles.itemView}>
               <Image
-                source={{ uri: item.data.imageUrl }}
+                source={{uri: item.data.imageUrl}}
                 style={styles.itemImage}
               />
               <View style={styles.nameView}>
@@ -104,10 +102,10 @@ const Main = () => {
                 <Text style={styles.descText}>{item.data.description}</Text>
                 <View style={styles.priceView}>
                   <Text style={styles.priceText}>
-                    {'₹' + item.data.discountPrice}
+                    {'$' + item.data.discountPrice}
                   </Text>
                   <Text style={styles.discountText}>
-                    {'₹' + item.data.price}
+                    {'$' + item.data.price}
                   </Text>
                 </View>
               </View>
@@ -116,7 +114,7 @@ const Main = () => {
                 onPress={() => {
                   onAddToCart(item, index);
                 }}>
-                <Text style={{ color: '#fff' }}>Add To cart</Text>
+                <Text style={{color: '#fff'}}>Add To cart</Text>
               </TouchableOpacity>
             </View>
           );
@@ -128,21 +126,18 @@ const Main = () => {
 
 export default Main;
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  padding: 16,
-
+  container: {flex: 1},
   itemView: {
     flexDirection: 'row',
-    width: '100%',
+    width: '90%',
     alignSelf: 'center',
     backgroundColor: '#fff',
     elevation: 4,
     marginTop: 10,
     borderRadius: 10,
     height: 100,
-    marginBottom: 0,
+    marginBottom: 10,
     alignItems: 'center',
-    padding: 16,
   },
   itemImage: {
     width: 90,
@@ -157,12 +152,10 @@ const styles = StyleSheet.create({
   priceView: {
     flexDirection: 'row',
     alignItems: 'center',
-
   },
   nameText: {
     fontSize: 18,
     fontWeight: '700',
-    color: 'black',
   },
   descText: {
     fontSize: 14,
@@ -172,14 +165,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'green',
     fontWeight: '700',
-
   },
   discountText: {
     fontSize: 17,
     fontWeight: '600',
     textDecorationLine: 'line-through',
     marginLeft: 5,
-    color: 'red',
   },
   addToCartBtn: {
     backgroundColor: 'green',

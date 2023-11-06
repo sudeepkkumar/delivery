@@ -4,14 +4,11 @@ import Main from './Main';
 import Search from './Search';
 import Wishlist from './Wishlist';
 import Orders from './Orders';
-import Profile from './Profile';
-
+import Profile from './Profile/Profile';
 const Home = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   return (
-    
     <View style={styles.container}>
-         <View style={styles.content}>
       {selectedTab == 0 ? (
         <Main />
       ) : selectedTab == 1 ? (
@@ -32,7 +29,7 @@ const Home = () => {
           <Image
             source={
               selectedTab == 0
-                ? require('../images/home_fill.png')
+              ? require('../images/home_fill.png')
                 : require('../images/home.png')
             }
             style={styles.bottomIcon}
@@ -46,8 +43,8 @@ const Home = () => {
           <Image
             source={
               selectedTab == 1
-                ? require('../images/search.png')
-                : require('../images/loupe.png')
+              ? require('../images/search.png')
+              : require('../images/loupe.png')
             }
             style={styles.bottomIcon}
           />
@@ -60,8 +57,8 @@ const Home = () => {
           <Image
             source={
               selectedTab == 2
-                ? require('../images/shop.png')
-                : require('../images/wishlist.png')
+              ? require('../images/shop.png')
+              : require('../images/wishlist.png')
             }
             style={styles.bottomIcon}
           />
@@ -74,8 +71,8 @@ const Home = () => {
           <Image
             source={
               selectedTab == 3
-                ? require('../images/cart.png')
-                : require('../images/checkout.png')
+              ? require('../images/cart.png')
+              : require('../images/checkout.png')
             }
             style={styles.bottomIcon}
           />
@@ -88,47 +85,41 @@ const Home = () => {
           <Image
             source={
               selectedTab == 4
-                ? require('../images/profilefill.png')
-                : require('../images/user.png')
+              ? require('../images/profilefill.png')
+              : require('../images/user.png')
             }
             style={styles.bottomIcon}
           />
         </TouchableOpacity>
-        </View>
-      </View></View>
-    
+      </View>
+    </View>
   );
 };
 
 export default Home;
-
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    content: {
-      flex: 1,  // Take up all available space
-    },
-    bottomTabView: {
-        flexDirection: 'row',
-        height: 50,
-        width: '100%',
-        backgroundColor: '#fff',
-        justifyContent: 'space-evenly',
-        alignItems: 'center',
-        elevation: 5,
-        position: 'absolute',
-        bottom: 0,
-        
-    },
-    bottomTab: {
-        width: '30%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    bottomIcon: {
-        width: '20%',
-        height: '40%',
-    },
+  container: {
+    flex: 1,
+  },
+  bottomTabView: {
+    flexDirection: 'row',
+    height: 60,
+    width: '100%',
+    backgroundColor: '#fff',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    elevation: 5,
+    position: 'absolute',
+    bottom: 0,
+  },
+  bottomTab: {
+    width: '20%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bottomIcon: {
+    width: 24,
+    height: 24,
+  },
 });

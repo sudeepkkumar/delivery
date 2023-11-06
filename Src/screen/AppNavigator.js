@@ -15,6 +15,7 @@ import Checkout from '../Checkout/Checkout'
 import Address from '../Checkout/Address'
 import Addnewaddress from '../Checkout/Addnewaddress'
 import OrderStatus from '../Checkout/OrderStatus'
+import Profile from './Tabs/user/Profile/Profile'
 
 
 const Stack = createStackNavigator();
@@ -82,7 +83,7 @@ const AppNavigator = () => {
                     name="Address"
                     options={{ headerShown: true }}
                 />
-                 <Stack.Screen
+                <Stack.Screen
                     component={Addnewaddress}
                     name="Addnewaddress"
                     options={{ headerShown: true }}
@@ -91,8 +92,15 @@ const AppNavigator = () => {
                     component={OrderStatus}
                     name="OrderStatus"
                     options={{ headerShown: false }}
+
+                />
+                <Stack.Screen
+                    component={Profile}
+                    name="Profile"
+                    options={{ headerShown: false }}
                 />
 
+               
 
 
 
