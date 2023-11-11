@@ -81,7 +81,7 @@ const Main = () => {
   return (
     <View style={styles.container}>
       <Header
-        title={'FoodApp'}
+        title={'Application name'}
         icon={require('../images/add.png')}
         count={cartCount}
         onClickIcon={() => {
