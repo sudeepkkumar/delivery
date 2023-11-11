@@ -178,7 +178,10 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   flatList: {
-    paddingBottom: 100, // Add some padding to the bottom to accommodate the icons
+   // paddingBottom: 100, // Add some padding to the bottom to accommodate the icons
+  },
+  FlatList: {
+    marginBottom: 60, 
   },
 });
 

@@ -46,7 +46,7 @@ const Dashboard = () => {
             setSelectedTab(1);
           }}>
           <Image
-            source={require('./Tabs/images/transaction.png')}
+            source={require('./Tabs/images/search.png')}
             style={[
               styles.bottomTabImg,
               {tintColor: selectedTab == 1 ? 'blue' : 'black'},
@@ -76,7 +76,7 @@ const Dashboard = () => {
             setSelectedTab(3);
           }}>
           <Image
-            source={require('./Tabs/images/notification.png')}
+            source={require('./Tabs/images/approved.png')}
             style={[
               styles.bottomTabImg,
               {tintColor: selectedTab == 3 ? 'blue' : 'black'},
@@ -89,7 +89,7 @@ const Dashboard = () => {
             setSelectedTab(4);
           }}>
           <Image
-            source={require('./Tabs/images/approved.png')}
+            source={require('./Tabs/images/user.png')}
             style={[
               styles.bottomTabImg,
               {tintColor: selectedTab == 4 ? 'blue' : 'black'},

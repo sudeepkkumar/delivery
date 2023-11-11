@@ -42,6 +42,7 @@ const Login = ({ navigation }) => {
         placeholder={'Enter Password '}
         placeholderTextColor={'black'}
         value={password}
+        secureTextEntry={true}
         onChangeText={txt => setPassword(txt)}
       />
       <TouchableOpacity

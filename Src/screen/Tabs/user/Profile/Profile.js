@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
-const Profile = ({ navigation }) => {
+
+
+const Profile = () => {
   const [users, setUserData] = useState(null);
+  const navigation = useNavigation();
+
 
   useEffect(() => {
     const getUserData = async () => {
@@ -16,40 +21,96 @@ const Profile = ({ navigation }) => {
           .get()
           .then((documentSnapshot) => {
             if (documentSnapshot.exists) {
-              const users = documentSnapshot.data();
-              setUserData(users);
+              const user = documentSnapshot.data();
+              setUserData(user);
             } else {
               alert('User data not found.');
             }
           })
+          .catch((error) => {
+            console.error('Error fetching user data:', error);
+            alert('An error occurred while fetching user data.');
+          });
       }
     };
+
     getUserData();
   }, []);
 
+  const handleLogout = async () => {
+    // Perform logout actions here
+    // For example, remove user data from storage and navigate to the login screen
+    await AsyncStorage.removeItem('USERID'); // Remove the user ID from storage
+    navigation.navigate('Userlogin'); // Navigate to the login screen
+  };
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { marginTop: 100 }]}>
       {users ? (
         <View style={styles.avatarContainer}>
           <View style={styles.avatar}></View>
-        <Text style={{fontWeight: 'bold', fontSize: 24, marginTop: 10}}>User Profile</Text>
-        <View style={styles.infoContainer}>
-          <View style={styles.infoBox}>
-            <Text style={styles.infoLabel}>Name</Text>
-            <Text style={styles.infoText}>{users.name}</Text>
-          </View>
-          <View style={styles.infoBox}>
-            <Text style={styles.infoLabel}>Mobile</Text>
-            <Text style={styles.infoText}>{users.mobile}</Text>
-          </View>
-          <View style={styles.infoBox}>
-            <Text style={styles.infoLabel}>Email</Text>
-            <Text style={styles.infoText}>{users.email}</Text>
+          <Text style={{ fontWeight: 'bold', fontSize: 24, marginTop: 10 }}>
+            User Profile
+          </Text>
+          <View style={styles.infoContainer}>
+            <View style={styles.infoBox}>
+              <Text style={styles.infoLabel}>Name</Text>
+              <Text style={styles.infoText}>{users.name}</Text>
+            </View>
+            <View style={styles.infoBox}>
+              <Text style={styles.infoLabel}>Mobile</Text>
+              <Text style={styles.infoText}>{users.mobile}</Text>
+            </View>
+            <View style={styles.infoBox}>
+              <Text style={styles.infoLabel}>Email</Text>
+              <Text style={styles.infoText}>{users.email}</Text>
+            </View>
+            <TouchableOpacity
+              style={{
+                backgroundColor: 'green',
+                width: 350,
+                height: 50,
+                alignSelf: 'center',
+                borderRadius: 10,
+                marginTop: 0,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              onPress={() => {
+                navigation.navigate('Changepassword');
+              }}
+            >
+              <Text style={styles.buttonText}>Change Password</Text>
+            </TouchableOpacity>
+            <View style={{ marginVertical: 8 }} />
+            <TouchableOpacity
+              style={{
+                backgroundColor: 'green',
+                width: 350,
+                height: 50,
+                alignSelf: 'center',
+                borderRadius: 10,
+                marginTop: 0,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              onPress={() => {
+                navigation.navigate('Edit1s');
+              }}
+            >
+              <Text style={styles.buttonText}>Edit Profile</Text>
+            </TouchableOpacity>
+            <View style={{ marginVertical: 8 }} />
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleLogout}
+            >
+              <Text style={styles.buttonText}>Logout</Text>
+            </TouchableOpacity>
           </View>
         </View>
-      </View>
       ) : (
-        <Text>Loading user data...</Text>
+        <Text>Loading data...</Text>
       )}
     </View>
   );
@@ -91,5 +152,20 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 18,
+  },
+  button: {
+    backgroundColor: 'red',
+    width: 150,
+    height: 50,
+    alignSelf: 'center',
+    borderRadius: 10,
+    marginTop: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'white',
   },
 });

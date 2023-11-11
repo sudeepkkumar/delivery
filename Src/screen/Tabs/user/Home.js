@@ -5,98 +5,84 @@ import Search from './Search';
 import Wishlist from './Wishlist';
 import Orders from './Orders';
 import Profile from './Profile/Profile';
+
 const Home = () => {
   const [selectedTab, setSelectedTab] = useState(0);
+
+  const renderScreen = () => {
+    switch (selectedTab) {
+      case 0:
+        return <Main />;
+      case 1:
+        return <Search />;
+      case 2:
+        return <Wishlist />;
+      case 3:
+        return <Orders />;
+      case 4:
+        return <Profile />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <View style={styles.container}>
-      {selectedTab == 0 ? (
-        <Main />
-      ) : selectedTab == 1 ? (
-        <Search />
-      ) : selectedTab == 2 ? (
-        <Wishlist />
-      ) : selectedTab == 3 ? (
-        <Orders />
-      ) : (
-        <Profile />
-      )}
+      {renderScreen()}
       <View style={styles.bottomTabView}>
-        <TouchableOpacity
-          style={styles.bottomTab}
-          onPress={() => {
-            setSelectedTab(0);
-          }}>
-          <Image
-            source={
-              selectedTab == 0
-              ? require('../images/home_fill.png')
-                : require('../images/home.png')
-            }
-            style={styles.bottomIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.bottomTab}
-          onPress={() => {
-            setSelectedTab(1);
-          }}>
-          <Image
-            source={
-              selectedTab == 1
-              ? require('../images/search.png')
-              : require('../images/loupe.png')
-            }
-            style={styles.bottomIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.bottomTab}
-          onPress={() => {
-            setSelectedTab(2);
-          }}>
-          <Image
-            source={
-              selectedTab == 2
-              ? require('../images/shop.png')
-              : require('../images/wishlist.png')
-            }
-            style={styles.bottomIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.bottomTab}
-          onPress={() => {
-            setSelectedTab(3);
-          }}>
-          <Image
-            source={
-              selectedTab == 3
-              ? require('../images/cart.png')
-              : require('../images/checkout.png')
-            }
-            style={styles.bottomIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.bottomTab}
-          onPress={() => {
-            setSelectedTab(4);
-          }}>
-          <Image
-            source={
-              selectedTab == 4
-              ? require('../images/profilefill.png')
-              : require('../images/user.png')
-            }
-            style={styles.bottomIcon}
-          />
-        </TouchableOpacity>
+        <BottomTabIcon
+          iconSource={
+            selectedTab == 0
+            ? require('../images/home_fill.png')
+            : require('../images/home.png')
+          }
+          onPress={() => setSelectedTab(0)}
+        />
+        <BottomTabIcon
+          iconSource={
+            selectedTab == 1
+            ? require('../images/search.png')
+            : require('../images/loupe.png')
+          }
+          onPress={() => setSelectedTab(1)}
+        />
+        <BottomTabIcon
+          iconSource={
+            selectedTab == 2
+            ? require('../images/shop.png')
+            : require('../images/wishlist.png')
+          }
+          onPress={() => setSelectedTab(2)}
+        />
+        <BottomTabIcon
+          iconSource={
+            selectedTab == 3
+            ? require('../images/cart.png')
+            : require('../images/checkout.png')
+          }
+          onPress={() => setSelectedTab(3)}
+        />
+        <BottomTabIcon
+          iconSource={
+            selectedTab == 4
+            ? require('../images/profilefill.png')
+            : require('../images/user.png')
+          }
+          onPress={() => setSelectedTab(4)}
+        />
       </View>
     </View>
   );
 };
 
+const BottomTabIcon = ({ iconSource, onPress }) => (
+  <TouchableOpacity style={styles.bottomTab} onPress={onPress}>
+    <Image source={iconSource} style={styles.bottomIcon} />
+  </TouchableOpacity>
+);
+
 export default Home;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

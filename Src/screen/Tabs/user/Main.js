@@ -12,14 +12,16 @@ import Header from '../../../Common/Header';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
+
 let userId = '';
+
 const Main = () => {
   const [items, setItems] = useState([]);
   const [cartCount, setCartCount] = useState(0);
   const navigation = useNavigation();
   const isFocused = useIsFocused();
+
   useEffect(() => {
-    // const subscriber =
     firestore()
       .collection('items')
       .get()
@@ -39,19 +41,22 @@ const Main = () => {
         });
         setItems(tempData);
       });
-    // Stop listening for updates when no longer required
-    // return () => subscriber();
   }, []);
+
   useEffect(() => {
     getCartItems();
   }, [isFocused]);
+
   const getCartItems = async () => {
     userId = await AsyncStorage.getItem('USERID');
-    const user = await firestore().collection('users').doc(userId).get();
+    const user = await firestore().collection('users').doc(userId)
+    .get();
     setCartCount(user._data.cart.length);
   };
+
   const onAddToCart = async (item, index) => {
-    const user = await firestore().collection('users').doc(userId).get();
+    const user = await firestore().collection('users').
+    doc(userId).get();
     console.log(user._data.cart);
     let tempDart = [];
     tempDart = user._data.cart;
@@ -78,6 +83,7 @@ const Main = () => {
     });
     getCartItems();
   };
+
   return (
     <View style={styles.container}>
       <Header
@@ -90,22 +96,22 @@ const Main = () => {
       />
       <FlatList
         data={items}
-        renderItem={({item, index}) => {
+        renderItem={({ item, index }) => {
           return (
             <View style={styles.itemView}>
               <Image
-                source={{uri: item.data.imageUrl}}
+                source={{ uri: item.data.imageUrl }}
                 style={styles.itemImage}
               />
-              <View style={styles.nameView}>
+              <View style={styles.itemInfo}>
                 <Text style={styles.nameText}>{item.data.name}</Text>
                 <Text style={styles.descText}>{item.data.description}</Text>
                 <View style={styles.priceView}>
                   <Text style={styles.priceText}>
-                    {'$' + item.data.discountPrice}
+                    {'₹' + item.data.discountPrice}
                   </Text>
                   <Text style={styles.discountText}>
-                    {'$' + item.data.price}
+                    {'₹' + item.data.price}
                   </Text>
                 </View>
               </View>
@@ -114,19 +120,21 @@ const Main = () => {
                 onPress={() => {
                   onAddToCart(item, index);
                 }}>
-                <Text style={{color: '#fff'}}>Add To cart</Text>
+                <Text style={{ color: '#fff' }}>Add To cart</Text>
               </TouchableOpacity>
             </View>
           );
         }}
+        style={styles.flatList}
       />
     </View>
   );
 };
 
 export default Main;
+
 const styles = StyleSheet.create({
-  container: {flex: 1},
+  container: { flex: 1 },
   itemView: {
     flexDirection: 'row',
     width: '90%',
@@ -135,7 +143,7 @@ const styles = StyleSheet.create({
     elevation: 4,
     marginTop: 10,
     borderRadius: 10,
-    height: 100,
+    height: 120,
     marginBottom: 10,
     alignItems: 'center',
   },
@@ -145,21 +153,27 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     margin: 5,
   },
-  nameView: {
+  itemInfo: {
     width: '30%',
     margin: 10,
+  },
+  flatList: {
+    marginBottom: 60, // Adjust the margin to give space to the bottom tab
   },
   priceView: {
     flexDirection: 'row',
     alignItems: 'center',
+    
   },
   nameText: {
     fontSize: 18,
     fontWeight: '700',
+    color:'black',
   },
   descText: {
     fontSize: 14,
     fontWeight: '600',
+    color:'grey',
   },
   priceText: {
     fontSize: 18,
@@ -171,6 +185,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textDecorationLine: 'line-through',
     marginLeft: 5,
+    color:'red',
   },
   addToCartBtn: {
     backgroundColor: 'green',

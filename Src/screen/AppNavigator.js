@@ -16,6 +16,10 @@ import Address from '../Checkout/Address'
 import Addnewaddress from '../Checkout/Addnewaddress'
 import OrderStatus from '../Checkout/OrderStatus'
 import Profile from './Tabs/user/Profile/Profile'
+import Edit1s from './Tabs/user/Profile/Edit1s'
+import Changepassword from './Tabs/user/Profile/Changepassword'
+import Search from'./Tabs/user/Search'
+import Description from './Tabs/user/Description'
 
 
 const Stack = createStackNavigator();
@@ -97,8 +101,31 @@ const AppNavigator = () => {
                 <Stack.Screen
                     component={Profile}
                     name="Profile"
+                    options={{ headerShown: true }}
+                />
+                <Stack.Screen
+                    component={Edit1s}
+                    name="Edit1s"
                     options={{ headerShown: false }}
                 />
+                <Stack.Screen
+                    component={Changepassword}
+                    name="Changepassword"
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    component={Search}
+                    name="Search"
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    component={Description}
+                    name="Description"
+                    options={{ headerShown: true }}
+                />
+               
+
+
 
                
 

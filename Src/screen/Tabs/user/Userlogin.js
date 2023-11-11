@@ -14,38 +14,35 @@ const Userlogin = ({ navigation }) => {
 
     const adminLogin = async () => {
         setModalVisible(true);
-        firestore()
-            .collection('users')
-            .where('email', '>=', email)
-            .get()
-            .then(querySnapshot => {
-                setModalVisible(false);
-
-                console.log(querySnapshot.docs);
-
-                if (querySnapshot.docs[0]._data !== null) {
-                    if (
-                        querySnapshot.docs[0]._data.email === email &&
-                        querySnapshot.docs[0]._data.password === password
-                    )
-                    //AsyncStorage.setItem(
-                    //  'USERID',
-                    //  querySnapshot.docs[0]._data.userId,
-                    // ).then(() => {
-                    {
-                        goToNextScreen(
-                            querySnapshot.docs[0]._data.userId,
-                            querySnapshot.docs[0]._data.mobile,
-                            querySnapshot.docs[0]._data.name,
-                        );
-                    }
+    
+        try {
+            const querySnapshot = await firestore()
+                .collection('users')
+                .where('email', '==', email)
+                .get();
+    
+            setModalVisible(false);
+    
+            if (!querySnapshot.empty) {
+                const userData = querySnapshot.docs[0].data();
+    
+                if (userData.password === password) {
+                    goToNextScreen(
+                        userData.userId,
+                        userData.mobile,
+                        userData.name
+                    );
+                } else {
+                    alert('Incorrect Password');
                 }
-            })
-            .catch(error => {
-                setModalVisible(false);
-                console.log(error);
-                alert('Please Check Email/Password');
-            });
+            } else {
+                alert('User not found');
+            }
+        } catch (error) {
+            setModalVisible(false);
+            console.error(error);
+            alert('An error occurred. Please try again.');
+        }
     };
     const goToNextScreen = async (userId, mobile, name) => {
         await AsyncStorage.setItem('EMAIL', email);
@@ -77,6 +74,7 @@ const Userlogin = ({ navigation }) => {
                 placeholder={'Enter Password '}
                 placeholderTextColor={'black'}
                 value={password}
+                secureTextEntry={true}
                 onChangeText={txt => setPassword(txt)}
             />
             <TouchableOpacity
