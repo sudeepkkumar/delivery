@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: '#fff',
     marginTop: 20,
-    marginBottom: 10,
+    marginBottom: 5,
     padding: 10,
   },
   userName: {
@@ -156,6 +156,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginTop: 5,
   },
+  
 });
 
 export default Orders;
