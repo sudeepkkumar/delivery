@@ -86,7 +86,13 @@ const Cart = ({navigation}) => {
                 <Text style={styles.descText}>{item.description}</Text>
                 <View style={styles.priceView}>
                   <Text style={styles.priceText}>
+
                     {'$' + item.discountPrice}
+                    {'₹' + item.data.discountPrice}
+                  </Text>
+                  <Text style={styles.discountText}>
+                    {'₹' + item.data.price}
+
                   </Text>
                   <Text style={styles.discountText}>{'$' + item.price}</Text>
                 </View>
@@ -147,7 +153,7 @@ const Cart = ({navigation}) => {
       {cartList && cartList.length > 0 && (
         <View style={styles.checkoutView}>
           <Text style={{color: '#000', fontWeight: '600'}}>
-            {'Items(' + cartList.length + ')\nTotal: $' + getTotal()}
+            {'Items(' + cartList.length + ') Total: ₹' + getTotal()}
           </Text>
           <TouchableOpacity
             style={[

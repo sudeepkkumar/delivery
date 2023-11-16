@@ -1,41 +1,46 @@
-import {
-    View, Text, StyleSheet,
-    TextInput,
-    TouchableOpacity
-} from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = ({ navigation }) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-    const adminLogin = async () => {
-        const users = await firestore().collection('admin').get();
-        console.log(users.password + '  ' + password);
-        if (
-            email == users.docs[0]._data.email &&
-            password == users.docs[0]._data.password
-        ) {
-            await AsyncStorage.setItem('EMAIL', email);
-            navigation.navigate('Dashboard');
+  const adminLogin = async () => {
+    try {
+      const adminSnapshot = await firestore().collection('admin').where('email', '==', email).get();
+
+      if (!adminSnapshot.empty) {
+        const adminData = adminSnapshot.docs[0].data();
+
+        if (password === adminData.password) {
+          // Passwords match, navigate to the Dashboard
+          await AsyncStorage.setItem('EMAIL', email);
+          navigation.navigate('Dashboard');
         } else {
-            alert('wrong email/pass');
+          // Incorrect password
+          alert('Incorrect password');
         }
-    };
+      } else {
+        // User not found with the given email
+        alert('User not found');
+      }
+    } catch (error) {
+      console.error('Error during admin login:', error);
+      alert('An error occurred during login');
+    }
+  };
 
-
-
-    return (
-        <View style={styles.container}>
+  return (
+    <View style={styles.container}>
       <Text style={styles.title}>Admin Login</Text>
       <TextInput
         style={styles.inputStyle}
         placeholder={'Enter Email Id'}
         placeholderTextColor={'black'}
         value={email}
-        onChangeText={txt => setEmail(txt)}
+        onChangeText={(txt) => setEmail(txt)}
       />
       <TextInput
         style={styles.inputStyle}
@@ -43,7 +48,7 @@ const Login = ({ navigation }) => {
         placeholderTextColor={'black'}
         value={password}
         secureTextEntry={true}
-        onChangeText={txt => setPassword(txt)}
+        onChangeText={(txt) => setPassword(txt)}
       />
       <TouchableOpacity
         style={styles.loginBtn}
@@ -53,16 +58,13 @@ const Login = ({ navigation }) => {
           } else {
             alert('Please Enter Data');
           }
-        }}>
+        }}
+      >
         <Text style={styles.btnText}>Login</Text>
       </TouchableOpacity>
     </View>
   );
 };
-    
-
-
-export default Login;
 
 const styles = StyleSheet.create({
   container: {
@@ -83,8 +85,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderRadius: 10,
     width: '90%',
-    color:'black'
-    
+    color: 'black',
   },
   loginBtn: {
     backgroundColor: 'orange',
@@ -102,3 +103,5 @@ const styles = StyleSheet.create({
     color: '#000',
   },
 });
+
+export default Login;
