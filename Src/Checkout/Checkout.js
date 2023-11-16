@@ -45,7 +45,7 @@ const Checkout = ({ navigation }) => {
     const getTotal = () => {
         let total = 0;
         cartList.map(item => {
-            total = total + item.data.qty * item.data.discountPrice;
+            total = total + parseFloat(item.qty * item.discountPrice);
         });
         return total;
     };
@@ -99,22 +99,22 @@ const Checkout = ({ navigation }) => {
                         return (
                             <View style={styles.itemView}>
                                 <Image
-                                    source={{ uri: item.data.imageUrl }}
+                                    source={{ uri: item.imageUrl }}
                                     style={styles.itemImage}
                                 />
                                 <View style={styles.nameView}>
-                                    <Text style={styles.nameText}>{item.data.name}</Text>
-                                    <Text style={styles.descText}>{item.data.description}</Text>
+                                    <Text style={styles.nameText}>{item.name}</Text>
+                                    <Text style={styles.descText}>{item.description}</Text>
                                     <View style={styles.priceView}>
                                         <Text style={styles.priceText}>
-                                            {'₹' + item.data.discountPrice}
+                                            {'₹' + item.discountPrice}
                                         </Text>
                                         <Text style={styles.discountText}>
-                                            {'₹' + item.data.price}
+                                            {'₹' + item.price}
                                         </Text>
                                     </View>
                                 </View>
-                                <Text style={styles.nameText}>{'QTY : ' + item.data.qty}</Text>
+                                <Text style={styles.nameText}>{'QTY : ' + item.qty}</Text>
                             </View>
                         );
                     }}

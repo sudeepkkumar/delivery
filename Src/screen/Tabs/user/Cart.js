@@ -11,15 +11,18 @@ import {useIsFocused} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
 import {StripeProvider} from '@stripe/stripe-react-native';
-let userId = '';
+
 const Cart = ({navigation}) => {
   const isFocused = useIsFocused();
   const [cartList, setCartList] = useState([]);
+  const [userId, setuserId] = useState('');
   useEffect(() => {
     getCartItems();
   }, [isFocused]);
+
   const getCartItems = async () => {
-    userId = await AsyncStorage.getItem('USERID');
+    let userId = await AsyncStorage.getItem('USERID');
+    setuserId(userId);
     const user = await firestore().collection('users').doc(userId).get();
     setCartList(user._data.cart);
   };
@@ -30,7 +33,7 @@ const Cart = ({navigation}) => {
     tempDart = user._data.cart;
     tempDart.map(itm => {
       if (itm.id == item.id) {
-        itm.data.qty = itm.data.qty + 1;
+        itm.qty = itm.qty + 1;
       }
     });
     firestore().collection('users').doc(userId).update({
@@ -44,7 +47,7 @@ const Cart = ({navigation}) => {
     tempDart = user._data.cart;
     tempDart.map(itm => {
       if (itm.id == item.id) {
-        itm.data.qty = itm.data.qty - 1;
+        itm.qty = itm.qty - 1;
       }
     });
     firestore().collection('users').doc(userId).update({
@@ -65,7 +68,7 @@ const Cart = ({navigation}) => {
   const getTotal = () => {
     let total = 0;
     cartList.map(item => {
-      total = total + item.data.qty * item.data.discountPrice;
+      total = total + parseFloat(item.discountPrice * item.qty);
     });
     return total;
   };
@@ -77,20 +80,21 @@ const Cart = ({navigation}) => {
         renderItem={({item, index}) => {
           return (
             <View style={styles.itemView}>
-              <Image
-                source={{uri: item.data.imageUrl}}
-                style={styles.itemImage}
-              />
+              <Image source={{uri: item.imageUrl}} style={styles.itemImage} />
               <View style={styles.nameView}>
-                <Text style={styles.nameText}>{item.data.name}</Text>
-                <Text style={styles.descText}>{item.data.description}</Text>
+                <Text style={styles.nameText}>{item.name}</Text>
+                <Text style={styles.descText}>{item.description}</Text>
                 <View style={styles.priceView}>
                   <Text style={styles.priceText}>
+
+                    {'$' + item.discountPrice}
                     {'₹' + item.data.discountPrice}
                   </Text>
                   <Text style={styles.discountText}>
                     {'₹' + item.data.price}
+
                   </Text>
+                  <Text style={styles.discountText}>{'$' + item.price}</Text>
                 </View>
               </View>
               <View style={styles.addRemoveView}>
@@ -105,7 +109,7 @@ const Cart = ({navigation}) => {
                     },
                   ]}
                   onPress={() => {
-                    if (item.data.qty > 1) {
+                    if (item.qty > 1) {
                       removeItem(item);
                     } else {
                       deleteItem(index);
@@ -117,7 +121,7 @@ const Cart = ({navigation}) => {
                   </Text>
                 </TouchableOpacity>
                 <Text style={{fontSize: 16, fontWeight: '600'}}>
-                  {item.data.qty}
+                  {item.qty}
                 </Text>
                 <TouchableOpacity
                   style={[
@@ -146,7 +150,7 @@ const Cart = ({navigation}) => {
           );
         }}
       />
-      {cartList.length > 0 && (
+      {cartList && cartList.length > 0 && (
         <View style={styles.checkoutView}>
           <Text style={{color: '#000', fontWeight: '600'}}>
             {'Items(' + cartList.length + ') Total: ₹' + getTotal()}

@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet, Image } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import {View, Text, StyleSheet, Image} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import Header from '../../../Common/Header';
-import { FlatList } from 'react-native-gesture-handler';
+import {FlatList} from 'react-native-gesture-handler';
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -16,54 +16,46 @@ const Orders = () => {
       .collection('orders')
       .get()
       .then(querySnapshot => {
-        console.log('Total orders: ', querySnapshot.size);
         let tempData = [];
         querySnapshot.forEach(documentSnapshot => {
-          console.log(
-            'User ID: ',
-            documentSnapshot.id,
-            documentSnapshot.data(),
-          );
           tempData.push({
             orderId: documentSnapshot.id,
             data: documentSnapshot.data().data,
           });
         });
-        console.log(JSON.stringify(tempData));
         setOrders(tempData);
       });
   };
-
-
 
   return (
     <View style={styles.container}>
       <Header title={'All Orders'} />
       <FlatList
         data={orders}
-        keyExtractor={(item) => item.orderId}  // Use orderId as the key
-        renderItem={({ item }) => {
-          console.log('item' + item);
+        keyExtractor={item => item.orderId} // Use orderId as the key
+        renderItem={({item}) => {
           return (
             <View style={styles.orderItem}>
               <FlatList
                 data={item.data.items}
-                keyExtractor={(subItem) => subItem.data.id}  // Use a unique identifier from your data as the key
-                renderItem={({ item: subItem }) => {
+                keyExtractor={item => item.id} // Use a unique identifier from your data as the key
+                renderItem={({item}) => {
                   return (
                     <View style={styles.itemView}>
+                      <Text style={{position: 'absolute', bottom: 0, right: 20,fontSize:16, fontWeight:"800", color:"green"}}>
+                        Total: $ {item.discountPrice * item.qty}
+                      </Text>
                       <Image
-                        source={{ uri: subItem.data.imageUrl }}
+                        source={{uri: item.imageUrl}}
                         style={styles.itemImage}
                       />
                       <View>
-                        <Text style={styles.nameText}>{subItem.data.name}</Text>
+                        <Text style={styles.nameText}>{item.name}</Text>
                         <Text style={styles.nameText}>
                           {'Price: ' +
-                            subItem.data.discountPrice +
+                            item.discountPrice +
                             ', Qty: ' +
-                            subItem.data.qty}
-                          
+                            item.qty}
                         </Text>
                       </View>
                     </View>

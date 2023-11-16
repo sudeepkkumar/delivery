@@ -1,5 +1,5 @@
 // Main.js
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -12,15 +12,14 @@ import {
 import Header from '../../../Common/Header';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-
-let userId = '';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 
 const Main = () => {
   const [items, setItems] = useState([]);
   const [cartCount, setCartCount] = useState(0);
   const [filteredItems, setFilteredItems] = useState([]);
   const [search, setSearch] = useState('');
+  const [userId, setuserId] = useState('');
   const navigation = useNavigation();
   const isFocused = useIsFocused();
 
@@ -33,9 +32,9 @@ const Main = () => {
     firestore()
       .collection('items')
       .get()
-      .then((querySnapshot) => {
+      .then(querySnapshot => {
         let tempData = [];
-        querySnapshot.forEach((documentSnapshot) => {
+        querySnapshot.forEach(documentSnapshot => {
           tempData.push({
             id: documentSnapshot.id,
             data: documentSnapshot.data(),
@@ -47,42 +46,44 @@ const Main = () => {
   };
 
   const getCartItems = async () => {
-    userId = await AsyncStorage.getItem('USERID');
+    let userId = await AsyncStorage.getItem('USERID');
+    setuserId(userId);
     const user = await firestore().collection('users').doc(userId).get();
     setCartCount(user._data.cart.length);
   };
 
   const onAddToCart = async (item, index) => {
     const user = await firestore().collection('users').doc(userId).get();
-    let tempDart = [];
-    tempDart = user._data.cart;
-    if (tempDart.length > 0) {
-      let existing = false;
-      tempDart.map((itm) => {
-        if (itm.id === item.id) {
-          existing = true;
-          itm.data.qty = itm.data.qty + 1;
-        }
-      });
-      if (!existing) {
-        tempDart.push(item);
+    let tempCart = [];
+    tempCart = user.data().cart;
+
+    if (tempCart.length > 0) {
+      const existingItem = tempCart.find(cartItem => cartItem.id === item.id);
+      if (existingItem) {
+        existingItem.qty += 1;
+      } else {
+        let newItem = {...item.data, qty: 1, id: item.id};
+        tempCart.push(newItem);
       }
-      firestore().collection('users').doc(userId).update({
-        cart: tempDart,
+
+      await firestore().collection('users').doc(userId).update({
+        cart: tempCart,
       });
     } else {
-      tempDart.push(item);
+      let newItem = {...item.data, qty: 1, id: item.id};
+      tempCart.push(newItem);
+      await firestore().collection('users').doc(userId).update({
+        cart: tempCart,
+      });
     }
-    firestore().collection('users').doc(userId).update({
-      cart: tempDart,
-    });
+
     getCartItems();
   };
 
-  const handleSearch = (query) => {
+  const handleSearch = query => {
     setSearch(query);
-    const filtered = items.filter((item) =>
-      item.data.name.toLowerCase().includes(query.toLowerCase())
+    const filtered = items.filter(item =>
+      item.data.name.toLowerCase().includes(query.toLowerCase()),
     );
     setFilteredItems(filtered);
   };
@@ -105,11 +106,11 @@ const Main = () => {
       />
       <FlatList
         data={filteredItems}
-        renderItem={({ item, index }) => {
+        renderItem={({item, index}) => {
           return (
             <View style={styles.itemView}>
               <Image
-                source={{ uri: item.data.imageUrl }}
+                source={{uri: item.data.imageUrl}}
                 style={styles.itemImage}
               />
               <View style={styles.itemInfo}>
@@ -129,7 +130,7 @@ const Main = () => {
                 onPress={() => {
                   onAddToCart(item, index);
                 }}>
-                <Text style={{ color: '#fff' }}>Add To cart</Text>
+                <Text style={{color: '#fff'}}>Add To cart</Text>
               </TouchableOpacity>
             </View>
           );
@@ -142,7 +143,7 @@ const Main = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: {flex: 1},
   searchInput: {
     height: 50,
     borderColor: 'gray',
