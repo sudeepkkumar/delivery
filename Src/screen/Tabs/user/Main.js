@@ -7,33 +7,25 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Header from '../../../Common/Header';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-
-let userId = '';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 
 const Main = () => {
   const [items, setItems] = useState([]);
   const [cartCount, setCartCount] = useState(0);
   const navigation = useNavigation();
   const isFocused = useIsFocused();
-
+  const [userId, setuserId] = useState('');
   useEffect(() => {
     firestore()
       .collection('items')
       .get()
       .then(querySnapshot => {
-        console.log('Total users: ', querySnapshot.size);
         let tempData = [];
         querySnapshot.forEach(documentSnapshot => {
-          console.log(
-            'User ID: ',
-            documentSnapshot.id,
-            documentSnapshot.data(),
-          );
           tempData.push({
             id: documentSnapshot.id,
             data: documentSnapshot.data(),
@@ -43,44 +35,42 @@ const Main = () => {
       });
   }, []);
 
+  const getCartItems = async () => {
+    let userId = await AsyncStorage.getItem('USERID');
+    setuserId(userId);
+    const user = await firestore().collection('users').doc(userId).get();
+    setCartCount(user._data.cart.length);
+  };
+
   useEffect(() => {
     getCartItems();
   }, [isFocused]);
 
-  const getCartItems = async () => {
-    userId = await AsyncStorage.getItem('USERID');
-    const user = await firestore().collection('users').doc(userId)
-    .get();
-    setCartCount(user._data.cart.length);
-  };
-
   const onAddToCart = async (item, index) => {
-    const user = await firestore().collection('users').
-    doc(userId).get();
-    console.log(user._data.cart);
-    let tempDart = [];
-    tempDart = user._data.cart;
-    if (tempDart.length > 0) {
-      let existing = false;
-      tempDart.map(itm => {
-        if (itm.id == item.id) {
-          existing = true;
-          itm.data.qty = itm.data.qty + 1;
-        }
-      });
-      if (existing == false) {
-        tempDart.push(item);
+    const user = await firestore().collection('users').doc(userId).get();
+    let tempCart = [];
+    tempCart = user.data().cart;
+
+    if (tempCart.length > 0) {
+      const existingItem = tempCart.find(cartItem => cartItem.id === item.id);
+      if (existingItem) {
+        existingItem.qty += 1;
+      } else {
+        let newItem = {...item.data, qty: 1, id: item.id};
+        tempCart.push(newItem);
       }
-      firestore().collection('users').doc(userId).update({
-        cart: tempDart,
+
+      await firestore().collection('users').doc(userId).update({
+        cart: tempCart,
       });
     } else {
-      tempDart.push(item);
+      let newItem = {...item.data, qty: 1, id: item.id};
+      tempCart.push(newItem);
+      await firestore().collection('users').doc(userId).update({
+        cart: tempCart,
+      });
     }
-    console.log(tempDart);
-    firestore().collection('users').doc(userId).update({
-      cart: tempDart,
-    });
+
     getCartItems();
   };
 
@@ -96,11 +86,11 @@ const Main = () => {
       />
       <FlatList
         data={items}
-        renderItem={({ item, index }) => {
+        renderItem={({item, index}) => {
           return (
             <View style={styles.itemView}>
               <Image
-                source={{ uri: item.data.imageUrl }}
+                source={{uri: item.data.imageUrl}}
                 style={styles.itemImage}
               />
               <View style={styles.itemInfo}>
@@ -118,9 +108,9 @@ const Main = () => {
               <TouchableOpacity
                 style={styles.addToCartBtn}
                 onPress={() => {
-                  onAddToCart(item, index);
+                  onAddToCart(item, userId);
                 }}>
-                <Text style={{ color: '#fff' }}>Add To cart</Text>
+                <Text style={{color: '#fff'}}>Add To cart</Text>
               </TouchableOpacity>
             </View>
           );
@@ -134,7 +124,7 @@ const Main = () => {
 export default Main;
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: {flex: 1},
   itemView: {
     flexDirection: 'row',
     width: '90%',
@@ -163,17 +153,16 @@ const styles = StyleSheet.create({
   priceView: {
     flexDirection: 'row',
     alignItems: 'center',
-    
   },
   nameText: {
     fontSize: 18,
     fontWeight: '700',
-    color:'black',
+    color: 'black',
   },
   descText: {
     fontSize: 14,
     fontWeight: '600',
-    color:'grey',
+    color: 'grey',
   },
   priceText: {
     fontSize: 18,
@@ -185,7 +174,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textDecorationLine: 'line-through',
     marginLeft: 5,
-    color:'red',
+    color: 'red',
   },
   addToCartBtn: {
     backgroundColor: 'green',
