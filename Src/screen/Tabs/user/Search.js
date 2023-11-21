@@ -101,6 +101,7 @@ const Main = () => {
       <TextInput
         style={styles.searchInput}
         placeholder="Search items"
+        placeholderTextColor="#808080"
         onChangeText={handleSearch}
         value={search}
       />

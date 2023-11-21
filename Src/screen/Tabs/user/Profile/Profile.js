@@ -41,7 +41,7 @@ const Profile = () => {
     // Perform logout actions here
     // For example, remove user data from storage and navigate to the login screen
     await AsyncStorage.removeItem('USERID'); // Remove the user ID from storage
-    navigation.navigate('Userlogin'); // Navigate to the login screen
+    navigation.navigate('Signin'); // Navigate to the login screen
   };
 
   return (
@@ -49,21 +49,21 @@ const Profile = () => {
       {users ? (
         <View style={styles.avatarContainer}>
           <View style={styles.avatar}></View>
-          <Text style={{ fontWeight: 'bold', fontSize: 24, marginTop: 10 }}>
+          <Text style={{ fontWeight: 'bold', fontSize: 24, marginTop: 10,color:'black' }}>
             User Profile
           </Text>
           <View style={styles.infoContainer}>
             <View style={styles.infoBox}>
-              <Text style={styles.infoLabel}>Name</Text>
-              <Text style={styles.infoText}>{users.name}</Text>
+            <Text style={[styles.infoLabel, { fontWeight: 'bold', color: 'black' }]}>Name</Text>
+              <Text style={[styles.infoText, { fontWeight: 'bold', color: 'black' }]}>{users.name}</Text>
             </View>
             <View style={styles.infoBox}>
-              <Text style={styles.infoLabel}>Mobile</Text>
-              <Text style={styles.infoText}>{users.mobile}</Text>
+              <Text style={[styles.infoLabel, { fontWeight: 'bold', color: 'black' }]}>Mobile</Text>
+              <Text style={[styles.infoText, { fontWeight: 'bold', color: 'black' }]}>{users.mobile}</Text>
             </View>
             <View style={styles.infoBox}>
-              <Text style={styles.infoLabel}>Email</Text>
-              <Text style={styles.infoText}>{users.email}</Text>
+              <Text style={[styles.infoLabel, { fontWeight: 'bold', color: 'black' }]}>Email</Text>
+              <Text style={[styles.infoText, { fontWeight: 'bold', color: 'black' }]}>{users.email}</Text>
             </View>
             <TouchableOpacity
               style={{

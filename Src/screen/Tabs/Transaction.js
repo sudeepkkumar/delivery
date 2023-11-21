@@ -65,6 +65,7 @@ const Items = () => {
       <TextInput
         style={styles.searchInput}
         placeholder="Search items"
+        placeholderTextColor="grey"
         onChangeText={handleSearch}
         value={search}
       />

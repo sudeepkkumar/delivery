@@ -21,6 +21,7 @@ import Changepassword from './Tabs/user/Profile/Changepassword'
 import Search from'./Tabs/user/Search'
 import Description from './Tabs/user/Description'
 import Orders from './Tabs/Notifications'
+import Adminprofile from './Tabs/Adminprofile'
 
 
 const Stack = createStackNavigator();
@@ -127,6 +128,11 @@ const AppNavigator = () => {
                 <Stack.Screen
                     component={Orders}
                     name="Orders"
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    component={Adminprofile}
+                    name="Adminprofile"
                     options={{ headerShown: false }}
                 />
                

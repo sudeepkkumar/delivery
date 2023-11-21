@@ -5,6 +5,7 @@ import Items from './Tabs/Items';
 import Notifications from './Tabs/Notifications';
 import Orders from './Tabs/Orders';
 import Transaction from './Tabs/Transaction';
+import Adminprofile from './Tabs/Adminprofile';
 
 
 
@@ -24,7 +25,7 @@ const Dashboard = () => {
       ) : selectedTab == 3 ? (
         <Notifications />
       ) : (
-        < Orders />
+        < Adminprofile />
       )}
       <View style={styles.bottomView}>
         <TouchableOpacity

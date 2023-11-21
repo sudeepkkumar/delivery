@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,16 +7,15 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {useIsFocused} from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
-import {StripeProvider} from '@stripe/stripe-react-native';
 
-const Cart = ({navigation}) => {
+const Cart = ({ navigation }) => {
   const isFocused = useIsFocused();
   const [cartList, setCartList] = useState([]);
   const [userId, setuserId] = useState('');
+
   useEffect(() => {
     getCartItems();
   }, [isFocused]);
@@ -24,79 +24,81 @@ const Cart = ({navigation}) => {
     let userId = await AsyncStorage.getItem('USERID');
     setuserId(userId);
     const user = await firestore().collection('users').doc(userId).get();
-    setCartList(user._data.cart);
+    setCartList(user._data.cart || []);
   };
 
-  const addItem = async item => {
+  const addItem = async (item) => {
     const user = await firestore().collection('users').doc(userId).get();
-    let tempDart = [];
-    tempDart = user._data.cart;
-    tempDart.map(itm => {
-      if (itm.id == item.id) {
+    let tempCart = user._data.cart || [];
+    tempCart.map((itm) => {
+      if (itm.id === item.id) {
         itm.qty = itm.qty + 1;
       }
     });
     firestore().collection('users').doc(userId).update({
-      cart: tempDart,
+      cart: tempCart,
     });
     getCartItems();
   };
-  const removeItem = async item => {
+
+  const removeItem = async (item) => {
     const user = await firestore().collection('users').doc(userId).get();
-    let tempDart = [];
-    tempDart = user._data.cart;
-    tempDart.map(itm => {
-      if (itm.id == item.id) {
+    let tempCart = user._data.cart || [];
+    tempCart.map((itm) => {
+      if (itm.id === item.id) {
         itm.qty = itm.qty - 1;
       }
     });
     firestore().collection('users').doc(userId).update({
-      cart: tempDart,
+      cart: tempCart,
     });
     getCartItems();
   };
-  const deleteItem = async index => {
+
+  const deleteItem = async (index) => {
     const user = await firestore().collection('users').doc(userId).get();
-    let tempDart = [];
-    tempDart = user._data.cart;
-    tempDart.splice(index, 1);
+    let tempCart = user._data.cart || [];
+    tempCart.splice(index, 1);
     firestore().collection('users').doc(userId).update({
-      cart: tempDart,
+      cart: tempCart,
     });
     getCartItems();
   };
+
   const getTotal = () => {
     let total = 0;
-    cartList.map(item => {
-      total = total + parseFloat(item.discountPrice * item.qty);
-    });
+    if (cartList && cartList.length > 0) {
+      cartList.forEach((item) => {
+        const itemDiscountPrice = item.discountPrice || 0;
+        const itemQty = item.qty || 0;
+        total += parseFloat(itemDiscountPrice * itemQty);
+      });
+    }
     return total;
   };
 
   return (
     <View style={styles.container}>
       <FlatList
+        style={styles.flatList}
         data={cartList}
-        renderItem={({item, index}) => {
+        renderItem={({ item, index }) => {
           return (
             <View style={styles.itemView}>
-              <Image source={{uri: item.imageUrl}} style={styles.itemImage} />
+              <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
               <View style={styles.nameView}>
                 <Text style={styles.nameText}>{item.name}</Text>
                 <Text style={styles.descText}>{item.description}</Text>
                 <View style={styles.priceView}>
                   <Text style={styles.priceText}>
-
-                    {'$' + item.discountPrice}
-                    {'₹' + item.data.discountPrice}
+                    {'₹' + (item.discountPrice || 0)}
                   </Text>
                   <Text style={styles.discountText}>
-                    {'₹' + item.data.price}
-
+                    {'₹' + (item.price || 0)}
                   </Text>
-                  <Text style={styles.discountText}>{'$' + item.price}</Text>
                 </View>
               </View>
+
               <View style={styles.addRemoveView}>
                 <TouchableOpacity
                   style={[
@@ -116,11 +118,11 @@ const Cart = ({navigation}) => {
                     }
                   }}>
                   <Text
-                    style={{color: '#fff', fontSize: 20, fontWeight: '700'}}>
+                    style={{ color: 'white', fontSize: 20, fontWeight: '700' }}>
                     -
                   </Text>
                 </TouchableOpacity>
-                <Text style={{fontSize: 16, fontWeight: '600'}}>
+                <Text style={{ fontSize: 16, fontWeight: '600', color: 'black' }}>
                   {item.qty}
                 </Text>
                 <TouchableOpacity
@@ -138,7 +140,7 @@ const Cart = ({navigation}) => {
                   }}>
                   <Text
                     style={{
-                      color: '#fff',
+                      color: 'white',
                       fontSize: 20,
                       fontWeight: '700',
                     }}>
@@ -152,7 +154,7 @@ const Cart = ({navigation}) => {
       />
       {cartList && cartList.length > 0 && (
         <View style={styles.checkoutView}>
-          <Text style={{color: '#000', fontWeight: '600'}}>
+          <Text style={{ color: '#000', fontWeight: '600' }}>
             {'Items(' + cartList.length + ') Total: ₹' + getTotal()}
           </Text>
           <TouchableOpacity
@@ -168,7 +170,7 @@ const Cart = ({navigation}) => {
             onPress={() => {
               navigation.navigate('Checkout');
             }}>
-            <Text style={{color: '#fff'}}>Checkout</Text>
+            <Text style={{ color: '#fff' }}>Checkout</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -176,10 +178,12 @@ const Cart = ({navigation}) => {
   );
 };
 
-export default Cart;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  flatList: {
+    marginBottom: 60,
   },
   itemView: {
     flexDirection: 'row',
@@ -210,10 +214,12 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 18,
     fontWeight: '700',
+    color: 'black',
   },
   descText: {
     fontSize: 14,
     fontWeight: '600',
+    color: 'black',
   },
   priceText: {
     fontSize: 18,
@@ -225,6 +231,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textDecorationLine: 'line-through',
     marginLeft: 5,
+    color: 'red',
   },
   addRemoveView: {
     flexDirection: 'row',
@@ -247,3 +254,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+export default Cart;

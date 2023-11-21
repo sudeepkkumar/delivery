@@ -67,30 +67,30 @@ const Profile = ({ navigation }) => {
       {userData ? (
         <View style={styles.avatarContainer}>
           <View style={styles.avatar}></View>
-          <Text style={{ fontWeight: 'bold', fontSize: 24, marginTop: 10 }}>
+          <Text style={{ fontWeight: 'bold', fontSize: 24, marginTop: 10,color:'black' }}>
            Edit User Profile
           </Text>
           <View style={styles.infoContainer}>
-            <View style={styles.infoBox}>
-              <Text style={styles.infoLabel}>Name</Text>
+            <View style={[styles.infoBox, { fontWeight: 'bold', color: 'black' }]}>
+              <Text style={[styles.infoLabel, { fontWeight: 'bold', color: 'black' }]}>Name</Text>
               <TextInput
-                style={styles.infoText}
+                style={[styles.infoText, { fontWeight: 'bold', color: 'black' }]}
                 value={name}
                 onChangeText={(text) => setName(text)}
               />
             </View>
             <View style={styles.infoBox}>
-              <Text style={styles.infoLabel}>Mobile</Text>
+              <Text style={[styles.infoLabel, { fontWeight: 'bold', color: 'black' }]}>Mobile</Text>
               <TextInput
-                style={styles.infoText}
+                style={[styles.infoText, { fontWeight: 'bold', color: 'black' }]}
                 value={mobile}
                 onChangeText={(text) => setMobile(text)}
               />
             </View>
             <View style={styles.infoBox}>
-              <Text style={styles.infoLabel}>Email</Text>
+              <Text style={[styles.infoLabel, { fontWeight: 'bold', color: 'black' }]}>Email</Text>
               <TextInput
-                style={styles.infoText}
+                style={[styles.infoText, { fontWeight: 'bold', color: 'black' }]}
                 value={email}
                 onChangeText={(text) => setEmail(text)}
               />

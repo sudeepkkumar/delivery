@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const Splash = ({ navigation }) => {
     useEffect(() => {
         setTimeout(() => {
-            checkLogin();
+            navigation.navigate('Signin')//next page to load //Signin
         }, 3000);
     }, []);
 
