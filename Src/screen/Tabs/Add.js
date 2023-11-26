@@ -68,7 +68,7 @@ const Add = () => {
   //upload item
   const uploadItem = async (url) => {
     try {
-      const adminId = await AsyncStorage.getItem('ADMINID');
+      const adminId = await AsyncStorage.getItem('adminId');
   
       if (!adminId) {
         console.log('Admin ID not found');

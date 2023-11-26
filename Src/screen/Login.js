@@ -19,7 +19,7 @@ const Login = () => {
 
         if (password === adminData.password) {
           // Passwords match, navigate to the Dashboard
-          await AsyncStorage.setItem('EMAIL', email);
+          await AsyncStorage.setItem('adminId', adminData.adminId);
           navigation.navigate('Dashboard');
         } else {
           // Incorrect password
