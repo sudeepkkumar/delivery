@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, StyleSheet, Image} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import Header from '../../../Common/Header';
-import { FlatList } from 'react-native-gesture-handler';
+import {FlatList} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AllOrders = () => {
@@ -16,30 +16,15 @@ const AllOrders = () => {
     let userId = await AsyncStorage.getItem('USERID');
     setuserId(userId);
     firestore()
-      .collection('orders').where("data.userId",'==',userId)
+      .collection('orders')
+      .where('userId', '==', userId)
       .get()
-      .then((querySnapshot) => {
-        let tempData = [];
-        querySnapshot.forEach((documentSnapshot) => {
-          const orderData = documentSnapshot.data().data;
-          const orderTotal = calculateOrderTotal(orderData.items);
-          console.log(orderData);
-          tempData.push({
-            orderId: documentSnapshot.id,
-            data: orderData,
-            total: orderTotal,
-          });
+      .then(querySnapshot => {
+        const orderData = querySnapshot.docs.map(doc => {
+          return {...doc.data(), id: doc.id};
         });
-        setOrders(tempData);
+        setOrders(orderData);
       });
-  };
-
-  const calculateOrderTotal = (items) => {
-    let total = 0;
-    items.forEach((item) => {
-      total += item.discountPrice * item.qty;
-    });
-    return total;
   };
 
   return (
@@ -47,35 +32,35 @@ const AllOrders = () => {
       <Header title={'All Orders'} />
       <FlatList
         data={orders}
-        keyExtractor={(item) => item.orderId}
-        renderItem={({ item }) => {
+        showsVerticalScrollIndicator={false}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({item}) => {
           return (
             <View style={styles.orderItem}>
-              <FlatList
-                data={item.data.items}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => {
-                  return (
-                    <View style={styles.itemView}>
+              <Text style={styles.nameText}>Order ID: {item.id}</Text>
+              <Text style={styles.nameText}>Customer: {item.orderBy}</Text>
+              <Text style={styles.nameText}> {item.address}</Text>
 
-                      <Text style={styles.nameText}>{item.name}</Text>
-                      <Text style={styles.nameText}>
-                        {'Price: ' +
-                          item.discountPrice +
-                          ', Qty: ' +
-                          item.qty}
-                      </Text>
-                    </View>
-                  );
-                }}
-              />
-              <Text style={styles.totalText}>Amount paid: ₹ {item.total}</Text>
+              <Text style={styles.nameText}>
+                Alternative Mobile: {item.userMobile}
+              </Text>
+              <Text style={styles.nameText}>Payment ID: {item.paymentId}</Text>
+
               <View style={styles.itemsDetailsGap} />
-              <Text style={styles.paymentIdText}>Order ID: {item.orderId}</Text>
-              <Text style={styles.paymentIdText}>Payment ID: {item.data.paymentId}</Text>
 
+              <View style={styles.itemView}>
+                <Text style={styles.nameText}>{item.items.name}</Text>
+                <Text style={styles.nameText}>
+                  {'Price: ' +
+                    item.items.discountPrice +
+                    ', Qty: ' +
+                    item.items.qty}
+                </Text>
+              </View>
 
-
+              <Text style={styles.totalText}>
+                Amount paid: ₹ {item.orderTotal}
+              </Text>
             </View>
           );
         }}

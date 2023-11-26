@@ -1,10 +1,11 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, BackHandler } from 'react-native';
+import React, { useState,useEffect } from 'react';
 import Main from './Main';
 import Search from './Search';
 import Wishlist from './Wishlist';
 import Orders from './Orders';
 import Profile from './Profile/Profile';
+import { useNavigation } from '@react-navigation/native';
 
 const Home = () => {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -25,6 +26,16 @@ const Home = () => {
         return null;
     }
   };
+
+  // const Navigation = useNavigation();
+  // useEffect(() => {
+  //   const unsuscribe = Navigation.addListener('beforeRemove', e => {
+  //     e.preventDefault();
+  //     BackHandler.exitApp();
+  //   });
+  //   return unsuscribe;
+  // }, [Navigation]);
+
 
   return (
     <View style={styles.container}>

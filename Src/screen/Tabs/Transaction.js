@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,8 @@ import {
   TextInput,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Items = () => {
   const [items, setItems] = useState([]);
@@ -22,13 +23,15 @@ const Items = () => {
     getItems();
   }, [isFocused]);
 
-  const getItems = () => {
+  const getItems = async () => {
+    const adminId = await AsyncStorage.getItem('adminId');
     firestore()
       .collection('items')
+      .where('adminId', '==', adminId)
       .get()
-      .then((querySnapshot) => {
+      .then(querySnapshot => {
         let tempData = [];
-        querySnapshot.forEach((documentSnapshot) => {
+        querySnapshot.forEach(documentSnapshot => {
           tempData.push({
             id: documentSnapshot.id,
             data: documentSnapshot.data(),
@@ -39,7 +42,7 @@ const Items = () => {
       });
   };
 
-  const deleteItem = (docId) => {
+  const deleteItem = docId => {
     firestore()
       .collection('items')
       .doc(docId)
@@ -47,15 +50,15 @@ const Items = () => {
       .then(() => {
         getItems();
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Error deleting item:', error);
       });
   };
 
-  const handleSearch = (query) => {
+  const handleSearch = query => {
     setSearch(query);
-    const filtered = items.filter((item) =>
-      item.data.name.toLowerCase().includes(query.toLowerCase())
+    const filtered = items.filter(item =>
+      item.data.name.toLowerCase().includes(query.toLowerCase()),
     );
     setFilteredItems(filtered);
   };
@@ -71,7 +74,7 @@ const Items = () => {
       />
       <FlatList
         data={filteredItems}
-        renderItem={({ item, index }) => (
+        renderItem={({item, index}) => (
           <TouchableOpacity
             onPress={() => {
               navigation.navigate('Edititem', {
@@ -80,9 +83,8 @@ const Items = () => {
               });
             }}>
             <View style={styles.itemView}>
-              
               <Image
-                source={{ uri: item.data.imageUrl }}
+                source={{uri: item.data.imageUrl}}
                 style={styles.itemImage}
               />
               <View style={styles.nameView}>
@@ -97,10 +99,9 @@ const Items = () => {
                   </Text>
                 </View>
               </View>
-              <View style={{ margin: 10 }}>
-                <TouchableOpacity onPress={() => deleteItem(item.id)}>
-                  
-                </TouchableOpacity>
+              <View style={{margin: 10}}>
+                <TouchableOpacity
+                  onPress={() => deleteItem(item.id)}></TouchableOpacity>
               </View>
             </View>
           </TouchableOpacity>
@@ -115,14 +116,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
-    
   },
   searchInput: {
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
     marginBottom: 1,
-    
+
     paddingHorizontal: 10,
   },
   itemView: {
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     height: 24,
   },
   FlatList: {
-    marginBottom: 60, 
+    marginBottom: 60,
   },
 });
 

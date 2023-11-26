@@ -1,93 +1,71 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, StyleSheet} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import { FlatList } from 'react-native-gesture-handler';
+import {FlatList} from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AllOrders = () => {
-  const [orders, setOrders] = useState([]);
-
+  const [orders, setOrders] = useState({});
+  const [total, settotal] = useState(0);
   useEffect(() => {
     getAllOrders();
   }, []);
 
   const getAllOrders = async () => {
+    const adminId = await AsyncStorage.getItem('adminId');
     firestore()
       .collection('orders')
+      .where('items.adminId', '==', adminId)
       .get()
-      .then((querySnapshot) => {
-        let tempData = [];
-        querySnapshot.forEach((documentSnapshot) => {
-          const orderData = documentSnapshot.data().data;
-          const orderTotal = calculateOrderTotal(orderData.items);
-          tempData.push({
-            orderId: documentSnapshot.id,
-            data: orderData,
-            total: orderTotal,
-            // Add more details here, e.g., customer info, order date, status, etc.
-            customer: orderData.customer, // Assuming customer info is present in orderData
-            orderDate: orderData.orderDate, // Assuming order date is present in orderData
-            status: orderData.status, // Assuming status is present in orderData
-            // ... Add other relevant details
-          });
+      .then(querySnapshot => {
+        const orderData = querySnapshot.docs.map(doc => {
+          return {...doc.data(), id: doc.id};
         });
-        setOrders(tempData);
+        setOrders(orderData);
       });
-  };
-
-  const calculateOrderTotal = (items) => {
-    let total = 0;
-    items.forEach((item) => {
-      total += item.discountPrice * item.qty;
-    });
-    return total;
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>All Orders</Text>
+
       <FlatList
         data={orders}
-        keyExtractor={(item) => item.orderId}
-        renderItem={({ item }) => {
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({item}) => {
           return (
             <View style={styles.orderItem}>
-              {/* Display additional order details */}
-              <Text style={styles.nameText}>Order ID: {item.orderId}</Text>
-              <Text style={styles.nameText}>Customer: {item.data.orderBy}</Text>
-              <Text style={styles.nameText}> {item.data.address}</Text>
-              
-              <Text style={styles.nameText}>Alternative Mobile: {item.data.userMobile}</Text>
-              <Text style={styles.nameText}>Payment ID: {item.data.paymentId}</Text>
+              <Text style={styles.nameText}>Order ID: {item.id}</Text>
+              <Text style={styles.nameText}>Customer: {item.orderBy}</Text>
+              <Text style={styles.nameText}> {item.address}</Text>
 
-              
+              <Text style={styles.nameText}>
+                Alternative Mobile: {item.userMobile}
+              </Text>
+              <Text style={styles.nameText}>Payment ID: {item.paymentId}</Text>
+
               <View style={styles.itemsDetailsGap} />
-              
-              {/* Display order items */}
-              <FlatList
-                data={item.data.items}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => {
-                  return (
-                    <View style={styles.itemView}>
-                      <Text style={styles.nameText}>{item.name}</Text>
-                      <Text style={styles.nameText}>
-                        {'Price: ' +
-                          item.discountPrice +
-                          ', Qty: ' +
-                          item.qty}
-                      </Text>
-                    </View>
-                  );
-                }}
-              />
-              {/* Display total amount */}
-              <Text style={styles.totalText}>Amount paid: ₹ {item.total}</Text>
+
+              <View style={styles.itemView}>
+                <Text style={styles.nameText}>{item.items.name}</Text>
+                <Text style={styles.nameText}>
+                  {'Price: ' +
+                    item.items.discountPrice +
+                    ', Qty: ' +
+                    item.items.qty}
+                </Text>
+              </View>
+
+              <Text style={styles.totalText}>
+                Amount paid: ₹ {item.orderTotal}
+              </Text>
             </View>
           );
         }}
       />
+
       {/* Adding space at the bottom */}
-      <View style={styles.bottomSpace} />
+      {/* <View style={styles.bottomSpace} /> */}
     </View>
   );
 };

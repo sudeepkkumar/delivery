@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity,ScrollView  } from 'react-native';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 const AdminRegister = () => {
   const navigation = useNavigation();
@@ -18,31 +25,45 @@ const AdminRegister = () => {
 
   const handleRegister = async () => {
     try {
-      if (!name || !email || !password || !businessName || !businessAddress || !businessLandmark || !contractDetails || !GST) {
+      if (
+        !name ||
+        !email ||
+        !password ||
+        !businessName ||
+        !businessAddress ||
+        !businessLandmark ||
+        !contractDetails ||
+        !GST
+      ) {
         alert('Please fill in all fields');
         return;
       }
 
-      const existingAdmin = await firestore().collection('admin').where('email', '==', email).get();
+      const existingAdmin = await firestore()
+        .collection('admin')
+        .where('email', '==', email)
+        .get();
 
       if (!existingAdmin.empty) {
         alert('Email already registered');
         return;
       }
 
-      const adminRef = await firestore().collection('admin').add({
-        name,
-        email,
-        password,
-        adminId:Math MIDIAcc(Math.random() * 10000 + 1),
-        business: {
-          businessName,
-          businessAddress,
-          businessLandmark,
-          contractDetails,
-          GST,
-        },
-      });
+      const adminRef = await firestore()
+        .collection('admin')
+        .add({
+          name,
+          email,
+          password,
+          adminId: 'admin' + Math.floor(Math.random() * 10000 + 1),
+          business: {
+            businessName,
+            businessAddress,
+            businessLandmark,
+            contractDetails,
+            GST,
+          },
+        });
 
       alert('Admin and Business details registered successfully!');
 
@@ -57,76 +78,73 @@ const AdminRegister = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
-    <View style={styles.container}>
-      <Text style={styles.title}>Admin Registration</Text>
-      <TextInput
-        style={styles.inputStyle}
-        placeholder={'Enter Name'}
-        placeholderTextColor={'black'}
-        value={name}
-        onChangeText={(text) => setName(text)}
-      />
-      <TextInput
-        style={styles.inputStyle}
-        placeholder={'Enter Email Id'}
-        placeholderTextColor={'black'}
-        value={email}
-        onChangeText={(text) => setEmail(text)}
-      />
-      <TextInput
-        style={styles.inputStyle}
-        placeholder={'Enter Password'}
-        placeholderTextColor={'black'}
-        secureTextEntry={true}
-        value={password}
-        onChangeText={(text) => setPassword(text)}
-      />
-      
-      
-      
-      <Text style={styles.title}>Business Details</Text>
-      
-      
-      <TextInput
-        style={styles.inputStyle}
-        placeholder={'Enter Business Name'}
-        placeholderTextColor={'black'}
-        value={businessName}
-        onChangeText={(text) => setBusinessName(text)}
-      />
-      <TextInput
-        style={styles.inputStyle}
-        placeholder={'Enter Business Address'}
-        placeholderTextColor={'black'}
-        value={businessAddress}
-        onChangeText={(text) => setBusinessAddress(text)}
-      />
-      <TextInput
-        style={styles.inputStyle}
-        placeholder={'Enter Business Landmark'}
-        placeholderTextColor={'black'}
-        value={businessLandmark}
-        onChangeText={(text) => setBusinessLandmark(text)}
-      />
-      <TextInput
-        style={styles.inputStyle}
-        placeholder={'Contract details'}
-        placeholderTextColor={'black'}
-        value={contractDetails}
-        onChangeText={(text) => setContractDetails(text)} // Changed to setContractDetails
-      />
-      <TextInput
-        style={styles.inputStyle}
-        placeholder={'Enter GST NUMBER'}
-        placeholderTextColor={'black'}
-        value={GST}
-        onChangeText={(text) => setGST(text)}
-      />
+      <View style={styles.container}>
+        <Text style={styles.title}>Admin Registration</Text>
+        <TextInput
+          style={styles.inputStyle}
+          placeholder={'Enter Name'}
+          placeholderTextColor={'black'}
+          value={name}
+          onChangeText={text => setName(text)}
+        />
+        <TextInput
+          style={styles.inputStyle}
+          placeholder={'Enter Email Id'}
+          placeholderTextColor={'black'}
+          value={email}
+          onChangeText={text => setEmail(text)}
+        />
+        <TextInput
+          style={styles.inputStyle}
+          placeholder={'Enter Password'}
+          placeholderTextColor={'black'}
+          secureTextEntry={true}
+          value={password}
+          onChangeText={text => setPassword(text)}
+        />
 
-      <TouchableOpacity style={styles.registerBtn} onPress={handleRegister}>
-        <Text style={styles.btnText}>Register</Text>
-      </TouchableOpacity>
-    </View>
+        <Text style={styles.title}>Business Details</Text>
+
+        <TextInput
+          style={styles.inputStyle}
+          placeholder={'Enter Business Name'}
+          placeholderTextColor={'black'}
+          value={businessName}
+          onChangeText={text => setBusinessName(text)}
+        />
+        <TextInput
+          style={styles.inputStyle}
+          placeholder={'Enter Business Address'}
+          placeholderTextColor={'black'}
+          value={businessAddress}
+          onChangeText={text => setBusinessAddress(text)}
+        />
+        <TextInput
+          style={styles.inputStyle}
+          placeholder={'Enter Business Landmark'}
+          placeholderTextColor={'black'}
+          value={businessLandmark}
+          onChangeText={text => setBusinessLandmark(text)}
+        />
+        <TextInput
+          style={styles.inputStyle}
+          placeholder={'Contract details'}
+          placeholderTextColor={'black'}
+          value={contractDetails}
+          onChangeText={text => setContractDetails(text)} // Changed to setContractDetails
+        />
+        <TextInput
+          style={styles.inputStyle}
+          placeholder={'Enter GST NUMBER'}
+          placeholderTextColor={'black'}
+          value={GST}
+          onChangeText={text => setGST(text)}
+        />
+
+        <TouchableOpacity style={styles.registerBtn} onPress={handleRegister}>
+          <Text style={styles.btnText}>Register</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
