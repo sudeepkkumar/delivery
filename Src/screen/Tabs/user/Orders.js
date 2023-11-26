@@ -3,23 +3,27 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import Header from '../../../Common/Header';
 import { FlatList } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AllOrders = () => {
   const [orders, setOrders] = useState([]);
-
+  const [userId, setuserId] = useState('');
   useEffect(() => {
     getAllOrders();
   }, []);
 
   const getAllOrders = async () => {
+    let userId = await AsyncStorage.getItem('USERID');
+    setuserId(userId);
     firestore()
-      .collection('orders')
+      .collection('orders').where("data.userId",'==',userId)
       .get()
       .then((querySnapshot) => {
         let tempData = [];
         querySnapshot.forEach((documentSnapshot) => {
           const orderData = documentSnapshot.data().data;
           const orderTotal = calculateOrderTotal(orderData.items);
+          console.log(orderData);
           tempData.push({
             orderId: documentSnapshot.id,
             data: orderData,

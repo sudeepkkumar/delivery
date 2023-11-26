@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native'; // Import navigation hook from React Navigation
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Login = ({ navigation }) => {
+const Login = () => {
+  const navigation = useNavigation(); // Initialize navigation
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -62,6 +65,14 @@ const Login = ({ navigation }) => {
       >
         <Text style={styles.btnText}>Login</Text>
       </TouchableOpacity>
+
+      {/* Link/Button for Admin Registration */}
+      <TouchableOpacity
+        style={styles.registerBtn}
+        onPress={() => navigation.navigate('AdminRegister')} // Navigate to AdminRegister screen
+      >
+        <Text style={styles.btnText}>Admin Register</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -69,19 +80,20 @@ const Login = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
     fontSize: 20,
     fontWeight: '800',
     color: '#000',
-    marginTop: 100,
-    alignSelf: 'center',
+    marginBottom: 30,
   },
   inputStyle: {
     paddingLeft: 20,
     height: 50,
     alignSelf: 'center',
-    marginTop: 30,
+    marginTop: 20,
     borderWidth: 0.5,
     borderRadius: 10,
     width: '90%',
@@ -93,9 +105,12 @@ const styles = StyleSheet.create({
     height: 50,
     alignSelf: 'center',
     borderRadius: 10,
-    marginTop: 50,
+    marginTop: 30,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  registerBtn: {
+    marginTop: 20,
   },
   btnText: {
     fontSize: 18,

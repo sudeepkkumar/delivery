@@ -8,6 +8,7 @@ import React, { useState } from 'react';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Add = () => {
   const [imageData, setImageData] = useState(null);
@@ -65,35 +66,40 @@ const Add = () => {
     uploadItem(url);
   };
   //upload item
-  const uploadItem = url => {
-    firestore()
-      .collection('items')
-      .add({
-        name: name,
-        price: price,
-        description: description,
-        discountPrice: discountPrice,
-
-        imageUrl: url + '',
-      })
-      .then(() => {
-        console.log('Item added successfully!');
-        // Show an alert to the user when the item is uploaded successfully
-        Alert.alert('Success', 'Item uploaded successfully!', [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Add any additional action you want here
-              // For example, you can navigate to a different screen.
-            },
+  const uploadItem = async (url) => {
+    try {
+      const adminId = await AsyncStorage.getItem('ADMINID');
+  
+      if (!adminId) {
+        console.log('Admin ID not found');
+        return; 
+         
+      }
+  
+      await firestore()
+        .collection('items')
+        .add({
+          name,
+          price,
+          description,
+          discountPrice,
+          imageUrl: url,
+          adminId: adminId,
+        });
+  
+      console.log('Item added successfully!');
+      Alert.alert('Success', 'Item uploaded successfully!', [
+        {
+          text: 'OK',
+          onPress: () => {
+            // Additional actions
           },
-        ]);
-      })
-      .catch(error => {
-        console.error('Error adding item:', error);
-        // Show an error message to the user if adding the item fails
-        Alert.alert('Error', 'Failed to upload item. Please try again later.');
-      });
+        },
+      ]);
+    } catch (error) {
+      console.error('Error adding item:', error);
+      Alert.alert('Error', 'Failed to upload item. Please try again later.');
+    }
   };
   
   
@@ -154,6 +160,8 @@ const Add = () => {
           style={styles.inputstyle} value={imageUrl}
           onChangeText={text => setImageUrl(text)}
         />
+
+        
         <Text style={{
           alignSelf: 'center',
           marginTop: 20, color: 'black'
