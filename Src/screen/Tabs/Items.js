@@ -7,9 +7,10 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Items = () => {
   const [items, setItems] = useState([]);
@@ -20,9 +21,11 @@ const Items = () => {
     getItems();
   }, [isFocused]);
 
-  const getItems = () => {
+  const getItems = async () => {
+    const adminId = await AsyncStorage.getItem('adminId');
     firestore()
       .collection('items')
+      .where('adminId', '==', adminId)
       .get()
       .then(querySnapshot => {
         let tempData = [];
@@ -62,11 +65,11 @@ const Items = () => {
       <Text style={styles.headerText}>Item List</Text>
       <FlatList
         data={items}
-        renderItem={({ item, index }) => {
+        renderItem={({item, index}) => {
           return (
             <View style={styles.itemView}>
               <Image
-                source={{ uri: item.data.imageUrl }}
+                source={{uri: item.data.imageUrl}}
                 style={styles.itemImage}
               />
               <View style={styles.nameView}>
@@ -81,7 +84,7 @@ const Items = () => {
                   </Text>
                 </View>
               </View>
-              <View style={{ margin: 10 }}>
+              <View style={{margin: 10}}>
                 <TouchableOpacity
                   onPress={() => {
                     navigation.navigate('Edititem', {
@@ -100,7 +103,7 @@ const Items = () => {
                   }}>
                   <Image
                     source={require('../Tabs/images/delete.png')}
-                    style={[styles.icon, { marginTop: 10 }]} // Adjust the margin as needed
+                    style={[styles.icon, {marginTop: 10}]} // Adjust the margin as needed
                   />
                 </TouchableOpacity>
               </View>
@@ -178,10 +181,10 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   flatList: {
-   // paddingBottom: 100, // Add some padding to the bottom to accommodate the icons
+    // paddingBottom: 100, // Add some padding to the bottom to accommodate the icons
   },
   FlatList: {
-    marginBottom: 60, 
+    marginBottom: 60,
   },
 });
 

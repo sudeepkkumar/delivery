@@ -1,47 +1,35 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import React, { useEffect } from 'react';
-import { useRoute } from '@react-navigation/native';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import React, {useEffect} from 'react';
+import {useRoute} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const OrderStatus = ({ navigation }) => {
+
+const OrderStatus = ({navigation}) => {
   const route = useRoute();
   useEffect(() => {
     if (route.params.status == 'success') {
       placeOrder();
     }
   }, []);
+
   const placeOrder = async () => {
-    let tempOrders = ({
-      items: route.params.cartList,
-      address: route.params.address,
-      orderBy: route.params.userName,
-      userEmail: route.params.userEmail,
-      userMobile: route.params.userMobile,
-      userId: route.params.userId,
-      orderTotal: route.params.total,
+    firestore().collection('users').doc(route.params.userId).update({
+      cart: [],
     });
 
-
-    firestore().collection('users')
-      .doc(route.params.userId).update({
-        cart: [],
-        orders: tempOrders,
-      });
-    firestore()
-      .collection('orders')
-      .add({
-        data: {
-          items: route.params.cartList,
-          address: route.params.address,
-          orderBy: route.params.userName,
-          userEmail: route.params.userEmail,
-          userMobile: route.params.userMobile,
-          userId: route.params.userId,
-          orderTotal: route.params.total,
-          paymentId: route.params.paymentId,
-        },
+    const orderData = route.params.cartList.map(item => {
+      return firestore().collection('orders').doc().set({
+        items: item,
+        address: route.params.address,
+        orderBy: route.params.userName,
+        userEmail: route.params.userEmail,
+        userMobile: route.params.userMobile,
+        userId: route.params.userId,
+        orderTotal: route.params.total,
         orderBy: route.params.userId,
+        paymentId: route.params.paymentId,
       });
+    });
   };
   return (
     <View style={styles.container}>
@@ -62,8 +50,7 @@ const OrderStatus = ({ navigation }) => {
         style={styles.backToHome}
         onPress={() => {
           navigation.navigate('Home');
-        }}
-      >
+        }}>
         <Text style={styles.homeText}>Go To Home</Text>
       </TouchableOpacity>
     </View>
@@ -98,7 +85,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 80,
-
   },
   homeText: {
     color: 'black',
