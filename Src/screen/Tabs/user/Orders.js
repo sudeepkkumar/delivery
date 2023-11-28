@@ -1,13 +1,14 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, Image} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import Header from '../../../Common/Header';
-import {FlatList} from 'react-native-gesture-handler';
+import { FlatList } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AllOrders = () => {
   const [orders, setOrders] = useState([]);
   const [userId, setuserId] = useState('');
+
   useEffect(() => {
     getAllOrders();
   }, []);
@@ -21,7 +22,7 @@ const AllOrders = () => {
       .get()
       .then(querySnapshot => {
         const orderData = querySnapshot.docs.map(doc => {
-          return {...doc.data(), id: doc.id};
+          return { ...doc.data(), id: doc.id };
         });
         setOrders(orderData);
       });
@@ -34,17 +35,25 @@ const AllOrders = () => {
         data={orders}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({item}) => {
+        renderItem={({ item }) => {
+          const orderDate = item.orderDateTime.toDate(); // Convert Firebase Timestamp to JavaScript Date object
+          const formattedDate = orderDate.toLocaleDateString(); // Format date as per locale
+          const formattedTime = orderDate.toLocaleTimeString(); // Format time as per locale
+
           return (
             <View style={styles.orderItem}>
-              <Text style={styles.nameText}>Order ID: {item.id}</Text>
+              <Text style={styles.orderIdText}>Order ID: {item.id}</Text>
+              {/* Display Date and Time */}
+              <Text style={styles.nameText}>
+                Order Date: {formattedDate} at {formattedTime}
+              </Text>
               <Text style={styles.nameText}>Customer: {item.orderBy}</Text>
               <Text style={styles.nameText}> {item.address}</Text>
-
               <Text style={styles.nameText}>
                 Alternative Mobile: {item.userMobile}
               </Text>
-              <Text style={styles.nameText}>Payment ID: {item.paymentId}</Text>
+              
+              <Text style={styles.paymentIdText}>Payment ID: {item.paymentId}</Text>
 
               <View style={styles.itemsDetailsGap} />
 
@@ -61,6 +70,8 @@ const AllOrders = () => {
               <Text style={styles.totalText}>
                 Amount paid: ₹ {item.orderTotal}
               </Text>
+
+              
             </View>
           );
         }}
@@ -70,7 +81,6 @@ const AllOrders = () => {
     </View>
   );
 };
-
 export default AllOrders;
 
 const styles = StyleSheet.create({

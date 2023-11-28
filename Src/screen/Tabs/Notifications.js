@@ -33,11 +33,21 @@ const AllOrders = () => {
         data={orders}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({item}) => {
+          const orderDate = item.orderDateTime.toDate(); // Convert Firebase Timestamp to JavaScript Date object
+          const formattedDate = orderDate.toLocaleDateString(); // Format date as per locale
+          const formattedTime = orderDate.toLocaleTimeString();
+
+
           return (
             <View style={styles.orderItem}>
+               {/* Display Date and Time */}
+               <Text style={styles.nameText}>
+                Order Date: {formattedDate} at {formattedTime}
+              </Text>
               <Text style={styles.nameText}>Order ID: {item.id}</Text>
               <Text style={styles.nameText}>Customer: {item.orderBy}</Text>
               <Text style={styles.nameText}> {item.address}</Text>
+
 
               <Text style={styles.nameText}>
                 Alternative Mobile: {item.userMobile}

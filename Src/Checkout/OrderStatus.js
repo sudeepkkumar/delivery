@@ -1,18 +1,20 @@
-import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
-import React, {useEffect} from 'react';
-import {useRoute} from '@react-navigation/native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useEffect } from 'react';
+import { useRoute } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const OrderStatus = ({navigation}) => {
+const OrderStatus = ({ navigation }) => {
   const route = useRoute();
   useEffect(() => {
-    if (route.params.status == 'success') {
+    if (route.params.status === 'success') {
       placeOrder();
     }
   }, []);
 
   const placeOrder = async () => {
+    const currentDate = new Date(); // Get current date and time
+
     firestore().collection('users').doc(route.params.userId).update({
       cart: [],
     });
@@ -26,38 +28,40 @@ const OrderStatus = ({navigation}) => {
         userMobile: route.params.userMobile,
         userId: route.params.userId,
         orderTotal: route.params.total,
-        orderBy: route.params.userId,
+        orderBy: route.params.userName,
         paymentId: route.params.paymentId,
+        orderDateTime: currentDate, // Add current date and time to order data
       });
     });
   };
+
   return (
     <View style={styles.container}>
-      <Image
-        source={
-          route.params.status == 'success'
-            ? require('../screen/Tabs/images/sucess.gif')
-            : require('../screen/Tabs/images/failed.gif')
-        }
-        style={styles.icon}
-      />
-      <Text style={styles.msg}>
-        {route.params.status == 'success'
-          ? 'Order Placed Successfully !!'
-          : 'Order Failed !!'}
-      </Text>
-      <TouchableOpacity
-        style={styles.backToHome}
-        onPress={() => {
-          navigation.navigate('Home');
-        }}>
-        <Text style={styles.homeText}>Go To Home</Text>
-      </TouchableOpacity>
-    </View>
-  );
+    <Image
+      source={
+        route.params.status == 'success'
+          ? require('../screen/Tabs/images/sucess.gif')
+          : require('../screen/Tabs/images/failed.gif')
+      }
+      style={styles.icon}
+    />
+    <Text style={styles.msg}>
+      {route.params.status == 'success'
+        ? 'Order Placed Successfully !!'
+        : 'Order Failed !!'}
+    </Text>
+    <TouchableOpacity
+      style={styles.backToHome}
+      onPress={() => {
+        navigation.navigate('Home');
+      }}>
+      <Text style={styles.homeText}>Go To Home</Text>
+    </TouchableOpacity>
+  </View>
+);
 };
-
 export default OrderStatus;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
